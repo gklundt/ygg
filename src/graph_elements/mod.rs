@@ -1,9 +1,8 @@
-pub mod resource_modifiers;
-pub mod resources;
 
 pub mod graph;
 pub mod node;
 pub mod edge;
+pub mod location;
 
 #[cfg(test)]
 mod tests {

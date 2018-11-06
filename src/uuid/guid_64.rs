@@ -50,22 +50,23 @@ impl Guid {
 impl fmt::Display for Guid {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{:0>2X?}{:0>2X?}-{:0>2X?}-{:0>2X?}-{:0>2X?}-{:0>2X?}{:0>2X?}{:0>2X?}"
-        , self.oct_0
-        , self.oct_1
-        , self.oct_2
-        , self.oct_3
-        , self.oct_4
-        , self.oct_5
-        , self.oct_6
-        , self.oct_7
-        // , self.oct_8
-        // , self.oct_9
-        // , self.oct_10
-        // , self.oct_11
-        // , self.oct_12
-        // , self.oct_13
-        // , self.oct_14
-        // , self.oct_15
+               , self.oct_0
+               , self.oct_1
+               , self.oct_2
+               , self.oct_3
+               , self.oct_4
+               , self.oct_5
+               , self.oct_6
+               , self.oct_7
+               // , self.oct_8
+               // , self.oct_9
+               // , self.oct_10
+               // , self.oct_11
+               // , self.oct_12
+               // , self.oct_13
+               // , self.oct_14
+               // , self.oct_15
         )
     }
 }
+

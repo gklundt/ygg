@@ -1,15 +1,23 @@
-use super::super::uuid::Guid;
+use crate::uuid::guid_64::Guid;
+use crate::graph_elements::location;
+
 use std::fmt;
 use std::rc::Rc;
 
 #[derive(Debug)]
 pub struct Node {
+    name: Option<String>,
     guid: Rc<Guid>,
+    location: Option<location::LocationKind>,
 }
 
 impl Node {
-    pub fn new() -> Rc<Node> {
-        Rc::new(Node { guid: Guid::new() })
+    pub fn new(location: Option<location::LocationKind>, name: Option<String>) -> Rc<Node> {
+        Rc::new(Node {
+            name,
+            guid: Guid::new(),
+            location,
+        })
     }
 
     pub fn get_guid(&self) -> Rc<Guid> {
