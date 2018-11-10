@@ -2,8 +2,14 @@ use crate::metrics::uom::*;
 
 pub fn distance_between_two_points(x: &PositionKind, y: &PositionKind) -> DistanceKind {
     match (x, y) {
-        (PositionKind::TwoDimensionEuclidean { x: _, y: _ }, PositionKind::TwoDimensionEuclidean { x: _, y: _ }) => distance_between_two_points_(x, y, distance_between_two_points_2de),
-        (PositionKind::ThreeDimensionEuclidean { x: _, y: _, z: _ }, PositionKind::ThreeDimensionEuclidean { x: _, y: _, z: _ }) => distance_between_two_points_(x, y, distance_between_two_points_3de),
+        (PositionKind::TwoDimensionEuclidean { x: _, y: _ },
+            PositionKind::TwoDimensionEuclidean { x: _, y: _ })
+        => distance_between_two_points_(x, y, distance_between_two_points_2de),
+
+        (PositionKind::ThreeDimensionEuclidean { x: _, y: _, z: _ },
+            PositionKind::ThreeDimensionEuclidean { x: _, y: _, z: _ })
+        => distance_between_two_points_(x, y, distance_between_two_points_3de),
+
         _ => DistanceKind::Unknown,
     }
 }

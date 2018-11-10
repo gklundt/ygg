@@ -11,6 +11,8 @@ pub struct Node {
     position: Option<uom::PositionKind>,
 }
 
+
+
 impl Node {
     pub fn new(position: Option<uom::PositionKind>, name: Option<String>) -> Rc<Node> {
         Rc::new(Node {

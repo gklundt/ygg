@@ -1,21 +1,25 @@
 use crate::uuid::guid_64::Guid;
 use crate::graph_elements::edge::Edge;
 use crate::graph_elements::node::Node;
-use crate::metrics::formulas;
 use crate::metrics::uom;
 
 use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
+use crate::metrics::formulas;
 
 #[derive(Debug)]
 pub struct Graph {
+    guid: Rc<Guid>,
     edges: HashMap<Rc<Guid>, Rc<Edge>>,
     nodes: HashMap<Rc<Guid>, Rc<Node>>,
     node_connections: HashMap<Rc<Guid>, HashMap<Rc<Guid>, Rc<Guid>>>,
     edge_connections: HashMap<Rc<Guid>, (Rc<Guid>, Rc<Guid>)>,
-    sub_graphs: Vec<Box<Graph>>,
+    sub_graphs: HashMap<Rc<Guid>, Rc<Graph>>,
+    named_graphs: HashMap<Rc<String>, Rc<Guid>>,
+    named_nodes: HashMap<Rc<String>, Rc<Guid>>,
 }
+
 
 #[derive(Debug)]
 enum EdgeState {
@@ -39,7 +43,7 @@ enum ActionState {
 
 impl fmt::Display for Graph {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut s: String = String::from("");
+        let mut s: String = String::from(format!("Graph Guid: {}\n",self.guid.to_string()));
         s.push_str("Nodes:\n");
         for node in &self.nodes {
             let ns = format!("\tNode:{}\n", node.1);
@@ -56,10 +60,10 @@ impl fmt::Display for Graph {
 
         for connection in &self.edge_connections {
             let ns: String = format!(
-                "\tEdge:{} connects nodes:({}) -> ({})\n",
-                connection.0,
-                (connection.1).0,
-                (connection.1).1
+                "\tEdge:{} connects \n\t\tnode: {} \n\t\tto:   {}\n",
+                self.edges.get(&(connection.0.clone())).unwrap(),
+                self.nodes.get(&(connection.1).0).unwrap(),
+                self.nodes.get(&(connection.1).1).unwrap()
             );
             s.push_str(&ns);
         }
@@ -70,11 +74,59 @@ impl fmt::Display for Graph {
 impl Graph {
     pub fn new() -> Self {
         Graph {
+            guid: Guid::new(),
             edges: HashMap::new(),
             nodes: HashMap::new(),
             node_connections: HashMap::new(),
             edge_connections: HashMap::new(),
-            sub_graphs: Vec::new(),
+            sub_graphs: HashMap::new(),
+            named_graphs: HashMap::new(),
+            named_nodes: HashMap::new(),
+        }
+    }
+
+    pub fn replicate(&self) -> Self {
+        let mut g = Graph::new();
+        for edge in &self.edges { g.edges.insert(edge.0.clone(), edge.1.clone()); }
+        for node in &self.nodes { g.nodes.insert(node.0.clone(), node.1.clone()); }
+        for nc in &self.node_connections { g.node_connections.insert(nc.0.clone(), nc.1.clone()); }
+        for ec in &self.edge_connections { g.edge_connections.insert(ec.0.clone(), ec.1.clone()); }
+        for nn in &self.named_nodes { g.named_nodes.insert(nn.0.clone(), nn.1.clone()); }
+        g
+    }
+
+    pub fn add_sub_graph(&mut self, sub_graph: Rc<Graph>){
+        self.sub_graphs.insert(sub_graph.get_guid(), sub_graph);
+    }
+
+    pub fn get_graph(&self, graph_guid: Rc<Guid>) -> Option<&Self> {
+        match Rc::ptr_eq(&self.guid, &graph_guid) {
+            true => Some(self),
+            false => {
+                let mut ret: Option<&Graph> = None;
+                for g in &self.sub_graphs {
+                    ret = match g.1.get_graph(graph_guid.clone()) {
+                        Some(g) => Some(g),
+                        None => None,
+                    };
+                    if let Some(_) = ret { break; }
+                }
+                ret
+            }
+        }
+    }
+
+    pub fn get_named_node(&self, name: Rc<String>) -> Option<Rc<Node>> {
+        match self.named_nodes.get(&name) {
+            Some(guid) => self.get_node(guid.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn get_node(&self, guid: Rc<Guid>) -> Option<Rc<Node>> {
+        match self.nodes.get(&guid.clone()) {
+            Some(node) => Some(node.clone()),
+            _ => None,
         }
     }
 
@@ -82,16 +134,24 @@ impl Graph {
         &self.nodes
     }
 
+    pub fn get_edges(&mut self) -> &HashMap<Rc<Guid>, Rc<Edge>> {
+        &self.edges
+    }
+
+    pub fn get_degree(&self, node: Rc<Guid>) -> usize {
+        match self.node_connections.get(&node) {
+            Some(conn) => conn.len(),
+            None => 0,
+        }
+    }
+
+    pub fn get_guid(&self) -> Rc<Guid> {
+        self.guid.clone()
+    }
+
     pub fn add_node(&mut self, node: Rc<Node>) {
         let guid: Rc<Guid> = Rc::clone(&node.get_guid());
         self.nodes.insert(guid, node);
-    }
-
-    pub fn remove_node_connection(&mut self, connection: (Rc<Node>, Rc<Node>)) {
-        let given: (Rc<Node>, Rc<Node>) = (connection.0.clone(), connection.1.clone());
-        let reverse: (Rc<Node>, Rc<Node>) = (connection.1.clone(), connection.0.clone());
-        self.remove_node_connection_(&given);
-        self.remove_node_connection_(&reverse);
     }
 
     pub fn add_connection(&mut self, connection: (Rc<Node>, Rc<Node>)) {
@@ -135,21 +195,22 @@ impl Graph {
         }
     }
 
-// pub fn remove_edge_connection(&mut self, connection: Rc<Edge>) {
-//     let exists = match self.edge_connections.get_mut(&connection.get_guid()) {
-//         Some(x) => Some(x),
-//         None => None,
-//     };
-//     let left = match exists {
-//         Some(x) => self.nodes.get(&x.0),
-//         None => None,
-//     };
+    pub fn remove_node_connection(&mut self, connection: (Rc<Node>, Rc<Node>)) {
+        let given: (Rc<Node>, Rc<Node>) = (connection.0.clone(), connection.1.clone());
+        let reverse: (Rc<Node>, Rc<Node>) = (connection.1.clone(), connection.0.clone());
+        self.remove_node_connection_(&given);
+        self.remove_node_connection_(&reverse);
+    }
 
-//     let right = match exists {
-//         Some(x) => self.nodes.get(&x.1),
-//         None => None,
-//     };
-// }
+    pub fn remove_edge_connection(&mut self, connection: Rc<Edge>) {
+        if let Some(edge) = self.edge_connections.get(&connection.get_guid()) {
+            if let Some(l) = self.nodes.get(&edge.0) {
+                if let Some(r) = self.nodes.get(&edge.1) {
+                    self.remove_node_connection((l.clone(), r.clone()));
+                }
+            }
+        }
+    }
 
     pub fn connect_all_nodes(&mut self) {
         let mut h: Vec<Rc<Node>> = Vec::new();

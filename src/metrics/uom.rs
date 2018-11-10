@@ -4,6 +4,10 @@ const METER_PER_FOOT: f64 = 0.3048;
 const METER_PER_MILE: f64 = 1609.34;
 const METER_PER_INCH: f64 = 0.0254;
 const RAD_PER_DEG: f64 = consts::PI / 180.0;
+const METER_PER_KILOMETER:f64 = 1000.0;
+pub const EQUATORIAL_RADIUS_OF_EARTH: DistanceKind = DistanceKind::Kilometers(6378.0);
+pub const POLAR_RADIUS_OF_EARTH: DistanceKind = DistanceKind::Kilometers(6357.0);
+
 
 pub trait Si {
     fn to_si(&self) -> Self;
@@ -48,6 +52,7 @@ pub enum DistanceKind {
     Feet(f64),
     Miles(f64),
     Meters(f64),
+    Kilometers(f64),
     Inches(f64),
     Unknown,
 }
@@ -57,6 +62,7 @@ impl Si for DistanceKind {
         match self {
             DistanceKind::Feet(ft) => DistanceKind::Meters(ft * METER_PER_FOOT),
             DistanceKind::Miles(mi) => DistanceKind::Meters(mi * METER_PER_MILE),
+            DistanceKind::Kilometers(m) => DistanceKind::Meters(m * METER_PER_KILOMETER),
             DistanceKind::Meters(m) => DistanceKind::Meters(*m),
             DistanceKind::Inches(i) => DistanceKind::Meters(i * METER_PER_INCH),
             _ => DistanceKind::Unknown,
@@ -83,6 +89,12 @@ impl DistanceKind {
         if let DistanceKind::Meters(m) = meter { i = m / METER_PER_INCH };
         DistanceKind::Inches(i)
     }
+    pub fn to_kilometers(&self) -> Self {
+        let meter: DistanceKind = self.to_si();
+        let mut i: f64 = 0.0;
+        if let DistanceKind::Meters(m) = meter { i = m / METER_PER_KILOMETER };
+        DistanceKind::Kilometers(i)
+    }
 }
 
 #[derive(Debug)]
@@ -102,14 +114,11 @@ pub enum SpeedKind {
     Knot(f64),
 }
 
-
-
 #[derive(Debug)]
 pub enum AngularKind {
     Degrees(f64),
     Radians(f64),
 }
-
 
 impl Si for AngularKind {
     fn to_si(&self) -> Self {
