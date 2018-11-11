@@ -4,7 +4,7 @@ use std::rc::Rc;
 
 pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKind) {
     let graph: Rc<Guid>;
-    if let solutions::ProblemKind::OptimizeWithinRoutes { graph: g } = problem {
+    if let solutions::ProblemKind::OptimizeWithinRoutes { graph_guid: g } = problem {
         graph = g.clone();
         println!("Problem: {:?} \n{:?}\n{:?}, ", problem, solution, graph);
     }

@@ -1,7 +1,6 @@
 extern crate ygg;
 
-use std::rc::Rc;
-
+use rand::{thread_rng, Rng};
 use ygg::graph_elements::graph::Graph;
 use ygg::graph_elements::node::Node;
 use ygg::metrics::uom::DistanceKind;
@@ -10,34 +9,64 @@ use ygg::solutions::ProblemKind;
 use ygg::solutions::Solution;
 
 fn main() {
-
     let mut g = Graph::new();
 
-    let n1: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(80.0), y: DistanceKind::Meters(90.0) }), Some("A".to_string()));
-    let n2: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(60.0), y: DistanceKind::Meters(55.0) }), Some("B".to_string()));
-    let n3: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(45.0), y: DistanceKind::Meters(18.0) }), Some("C".to_string()));
-    let n4: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(38.0), y: DistanceKind::Meters(30.0) }), Some("D".to_string()));
-    let n5: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(18.0), y: DistanceKind::Meters(32.0) }), Some("E".to_string()));
-    let n6: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(1.0), y: DistanceKind::Meters(60.0) }), Some("F".to_string()));
-    let n7: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(20.0), y: DistanceKind::Meters(63.0) }), Some("G".to_string()));
+    for i in 0..500 {
+        let name = format!("Node: {}", i);
 
-    g.add_node(n1.clone());
-    g.add_node(n2.clone());
-    g.add_node(n3.clone());
-    g.add_node(n4.clone());
-    g.add_node(n5.clone());
-    g.add_node(n6.clone());
-    g.add_node(n7.clone());
+        g.add_node(
+            Node::new(
+                Some(
+                    PositionKind::TwoDimensionEuclidean {
+                        x: DistanceKind::Meters(thread_rng().gen_range(1.0, 1000.0)),
+                        y: DistanceKind::Meters(thread_rng().gen_range(1.0, 1000.0)),
+                    }),
+                Some(name),
+            )
+        );
+    }
+
+//    let n1: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(80.0), y: DistanceKind::Meters(90.0) }), Some("A".to_string()));
+//    let n2: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(60.0), y: DistanceKind::Meters(55.0) }), Some("B".to_string()));
+//    let n3: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(45.0), y: DistanceKind::Meters(18.0) }), Some("C".to_string()));
+//    let n4: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(38.0), y: DistanceKind::Meters(30.0) }), Some("D".to_string()));
+//    let n5: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(18.0), y: DistanceKind::Meters(32.0) }), Some("E".to_string()));
+//    let n6: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(1.0), y: DistanceKind::Meters(60.0) }), Some("F".to_string()));
+//    let n7: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(20.0), y: DistanceKind::Meters(63.0) }), Some("G".to_string()));
+
+//    g.add_node(n1.clone());
+//    g.add_node(n2.clone());
+//    g.add_node(n3.clone());
+//    g.add_node(n4.clone());
+//    g.add_node(n5.clone());
+//    g.add_node(n6.clone());
+//    g.add_node(n7.clone());
 
     g.connect_all_nodes();
 
-    println!("{}", g);
+    //println!("{}", g);
 
-    let pk = ProblemKind::ShortestTour { graph: g.get_guid() };
 
-    let mut solve = Solution::new(Rc::new(g));
+    let pk = ProblemKind::ShortestTour { graph_guid: g.get_guid() };
+    let mut solve = Solution::new(g);
+
 
     solve.solve(&pk);
+
+    println!("Original Graph: {}", solve.get_graph());
+
+    for g in solve.get_graph().get_sub_graphs().clone(){
+        println!("The Minimum Spanning Tree: {}", g.1);
+        if let Some(node) = g.1.get_nodes().iter().next(){
+            if let Some(path) =  g.1.get_path_for_node(node.0.clone()){
+                for p in path{
+                    println!("{} - {}", p, g.1.get_node(p.clone()).unwrap());
+                }
+            }
+        }
+    }
+
+
 }
 
 

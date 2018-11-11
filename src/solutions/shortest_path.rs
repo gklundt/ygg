@@ -7,7 +7,7 @@ pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKin
     let graph: Rc<Guid>;
     let start: Rc<Guid>;
     let end: Rc<Guid>;
-    if let solutions::ProblemKind::ShortestPath { graph: g, start_node: s, end_node: e } = problem {
+    if let solutions::ProblemKind::ShortestPath { graph_guid: g, start_node_guid: s, end_node_guid: e } = problem {
         graph = g.clone();
         start = s.clone();
         end = e.clone();
@@ -17,7 +17,7 @@ pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKin
 
     // create working graph
     let og = solution.get_graph();
-    let mut my_graph = og.replicate();
+    let mut my_graph = og.replicate_all();
     let mut v = Vec::new();
 
     let mut i = 0;

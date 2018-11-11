@@ -15,21 +15,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="be11a71d-adc2-4bed-80c1-7d9d38de1b72" name="Default Changelist" comment="calculating distances between nodes and associating on the edge.">
-      <change afterPath="$PROJECT_DIR$/src/solutions/build_routes.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/solutions/mod.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/solutions/optimize_between_routes.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/solutions/optimize_within_routes.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/solutions/shortest_path.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/solutions/shortest_tour.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/solutions/solvers/mod.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/solutions/solvers/shortest_path.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graph_elements/edge.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/graph_elements/edge.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/graph_elements/graph.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/graph_elements/graph.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graph_elements/node.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/graph_elements/node.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/metrics/formulas.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/metrics/formulas.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/metrics/uom.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/metrics/uom.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/solutions/build_routes.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/solutions/build_routes.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/solutions/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/solutions/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/solutions/optimize_between_routes.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/solutions/optimize_between_routes.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/solutions/optimize_within_routes.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/solutions/optimize_within_routes.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/solutions/shortest_path.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/solutions/shortest_path.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/solutions/shortest_tour.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/solutions/shortest_tour.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -103,41 +98,51 @@
       <usages-collector id="statistics.vcs.git.usages" />
       <usages-collector id="statistics.cidr.testingFrameworks.usages" />
     </session>
+    <session id="271250169">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.open.time.0" value="1" />
+          <entry key="project.opened" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="rs" value="7070" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="Rust" value="7070" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.vcs.git.usages" />
+      <usages-collector id="statistics.cidr.testingFrameworks.usages" />
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="Disassembly" value="1" />
+          <entry key="Python" value="1" />
+          <entry key="Rust" value="25" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="Run ygg (disassembly)" value="1" />
+          <entry key="py" value="1" />
+          <entry key="rs" value="25" />
+        </counts>
+      </usages-collector>
+    </session>
   </component>
   <component name="FavoritesManager">
     <favorites_list name="ygg" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/graph_elements/graph.rs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="783">
-              <caret line="113" column="16" selection-start-line="113" selection-start-column="16" selection-end-line="113" selection-end-column="16" />
-              <folding>
-                <element signature="e#4102#4103#0" expanded="true" />
-                <element signature="e#4128#4129#0" expanded="true" />
-                <element signature="e#4195#4196#0" expanded="true" />
-                <element signature="e#4221#4222#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main.rs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="13" selection-start-line="13" selection-end-line="13" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/solutions/shortest_tour.rs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="14" selection-start-line="14" selection-end-line="14" />
+            <state relative-caret-position="17">
+              <caret line="13" column="19" selection-start-line="13" selection-start-column="16" selection-end-line="13" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -158,6 +163,7 @@
       <find>crate::uuid::guid_128::Guid</find>
       <find>const</find>
       <find>remove_node_connection_</find>
+      <find>println</find>
     </findStrings>
     <dirStrings>
       <dir>C:\Projects\ygg\target\x86_64-unknown-linux-gnu</dir>
@@ -177,7 +183,6 @@
         <option value="$PROJECT_DIR$/src/graph_elements/location.rs" />
         <option value="$PROJECT_DIR$/src/graph_elements/mod.rs" />
         <option value="$PROJECT_DIR$/src/metrics/uom.rs" />
-        <option value="$PROJECT_DIR$/src/graph_elements/node.rs" />
         <option value="$PROJECT_DIR$/src/solution.rs" />
         <option value="$PROJECT_DIR$/src/solution/ShortestPath.rs" />
         <option value="$PROJECT_DIR$/src/solution/ShortestPath/mod.rs" />
@@ -185,19 +190,20 @@
         <option value="$PROJECT_DIR$/src/solution/Solvers.rs" />
         <option value="$PROJECT_DIR$/src/solution/mod.rs" />
         <option value="$PROJECT_DIR$/src/solution/solvers.rs" />
-        <option value="$PROJECT_DIR$/src/lib.rs" />
         <option value="$PROJECT_DIR$/src/metrics/formulas.rs" />
         <option value="$PROJECT_DIR$/src/solutions/solvers/mod.rs" />
         <option value="$PROJECT_DIR$/src/metrics/mod.rs" />
+        <option value="$PROJECT_DIR$/src/graph_elements/edge.rs" />
+        <option value="$PROJECT_DIR$/src/solutions/shortest_path.rs" />
         <option value="$PROJECT_DIR$/src/solutions/build_routes.rs" />
         <option value="$PROJECT_DIR$/src/solutions/optimize_within_routes.rs" />
         <option value="$PROJECT_DIR$/src/solutions/optimize_between_routes.rs" />
-        <option value="$PROJECT_DIR$/src/graph_elements/edge.rs" />
-        <option value="$PROJECT_DIR$/src/solutions/shortest_path.rs" />
+        <option value="$PROJECT_DIR$/src/lib.rs" />
+        <option value="$PROJECT_DIR$/src/graph_elements/node.rs" />
+        <option value="$PROJECT_DIR$/src/solutions/shortest_tour.rs" />
         <option value="$PROJECT_DIR$/src/solutions/mod.rs" />
         <option value="$PROJECT_DIR$/src/graph_elements/graph.rs" />
         <option value="$PROJECT_DIR$/src/main.rs" />
-        <option value="$PROJECT_DIR$/src/solutions/shortest_tour.rs" />
       </list>
     </option>
   </component>
@@ -218,7 +224,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -231,35 +236,11 @@
               <item name="ygg" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="ygg" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ygg" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="graph_elements" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ygg" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ygg" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="metrics" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ygg" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ygg" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="solutions" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ygg" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ygg" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="solutions" type="462c0819:PsiDirectoryNode" />
-              <item name="solvers" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -301,16 +282,6 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="Test formulas::tests" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
-      <option name="channel" value="DEFAULT" />
-      <option name="command" value="test --package ygg --lib metrics::formulas::tests" />
-      <option name="allFeatures" value="true" />
-      <option name="nocapture" value="false" />
-      <option name="backtrace" value="SHORT" />
-      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
-      <envs />
-      <method v="2" />
-    </configuration>
     <configuration name="Test graph_elements::tests::it_works2" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
       <option name="channel" value="DEFAULT" />
       <option name="command" value="test --package ygg --lib graph_elements::tests::it_works2 -- --exact" />
@@ -341,21 +312,31 @@
       <envs />
       <method v="2" />
     </configuration>
+    <configuration name="clippy" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="channel" value="NIGHTLY" />
+      <option name="command" value="clippy" />
+      <option name="allFeatures" value="true" />
+      <option name="nocapture" value="false" />
+      <option name="backtrace" value="SHORT" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Cargo Command.Run Nightly" />
-      <item itemvalue="Cargo Command.Test formulas::tests" />
       <item itemvalue="Cargo Command.Test metrics::uom::tests::it_works2" />
       <item itemvalue="Cargo Command.Test metrics::uom::tests::does_this_even_work" />
       <item itemvalue="Cargo Command.Test graph_elements::tests::it_works2" />
       <item itemvalue="Cargo Command.Run ygg" />
+      <item itemvalue="Cargo Command.clippy" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Cargo Command.Run ygg" />
+        <item itemvalue="Cargo Command.clippy" />
+        <item itemvalue="Cargo Command.clippy" />
+        <item itemvalue="Cargo Command.clippy" />
         <item itemvalue="Cargo Command.Test graph_elements::tests::it_works2" />
-        <item itemvalue="Cargo Command.Test metrics::uom::tests::does_this_even_work" />
-        <item itemvalue="Cargo Command.Test metrics::uom::tests::it_works2" />
-        <item itemvalue="Cargo Command.Test formulas::tests" />
       </list>
     </recent_temporary>
   </component>
@@ -379,6 +360,7 @@
       <workItem from="1541685727831" duration="7214000" />
       <workItem from="1541692967030" duration="23673000" />
       <workItem from="1541774011202" duration="20793000" />
+      <workItem from="1541876473015" duration="29438000" />
     </task>
     <task id="LOCAL-00001" summary="work in progress">
       <created>1541542583679</created>
@@ -430,30 +412,31 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="107415000" />
+    <option name="totallyTimeSpent" value="136853000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-1" y="0" width="1922" height="1081" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.46637744" visible="true" weight="0.1977612" />
-      <window_info id="Structure" order="1" sideWeight="0.53362256" side_tool="true" visible="true" weight="0.1977612" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.55744684" visible="true" weight="0.20010673" />
+      <window_info id="Structure" order="1" sideWeight="0.4425532" side_tool="true" visible="true" weight="0.20010673" />
       <window_info id="Favorites" order="2" sideWeight="0.62459546" side_tool="true" weight="0.18496802" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.329718" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49840087" weight="0.55748373" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.4989339" weight="0.3991323" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32914045" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49840087" visible="true" weight="0.5073375" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.4989339" weight="0.39832285" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" weight="0.329718" />
-      <window_info anchor="bottom" id="Terminal" order="9" sideWeight="0.49946696" weight="0.7472885" />
+      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32914045" />
+      <window_info anchor="bottom" id="Terminal" order="9" sideWeight="0.49946696" weight="0.7463312" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50159913" side_tool="true" weight="0.30911064" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Database" order="3" weight="0.32995737" />
-      <window_info anchor="right" id="Cargo" order="4" weight="0.32995737" />
+      <window_info anchor="right" id="Cargo" order="4" weight="0.32977587" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -508,22 +491,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-pc-windows-gnu/lib/rustlib/src/rust/src/liballoc/string.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="197">
-          <caret line="2108" column="6" selection-start-line="2108" selection-start-column="6" selection-end-line="2108" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-pc-windows-gnu/lib/rustlib/src/rust/src/liballoc/string.rs" />
     <entry file="file://$PROJECT_DIR$/src/graph_elements/resources.rs" />
     <entry file="file://$PROJECT_DIR$/src/graph_elements/resource_modifiers.rs" />
-    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-pc-windows-gnu/lib/rustlib/src/rust/src/libcore/macros.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1216">
-          <caret line="484" column="13" selection-start-line="484" selection-start-column="13" selection-end-line="484" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-pc-windows-gnu/lib/rustlib/src/rust/src/libcore/macros.rs" />
     <entry file="file://$PROJECT_DIR$/src/tests.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
@@ -531,13 +502,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-pc-windows-gnu/lib/rustlib/src/rust/src/libstd/macros.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="291">
-          <caret line="156" column="13" selection-start-line="156" selection-start-column="13" selection-end-line="156" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-pc-windows-gnu/lib/rustlib/src/rust/src/libstd/macros.rs" />
     <entry file="file://$PROJECT_DIR$/src/uuid/guid_128.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="884">
@@ -549,22 +514,10 @@
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/graph_elements/location.rs" />
-    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-pc-windows-gnu/lib/rustlib/src/rust/src/libcore/cmp.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="243" selection-start-line="243" selection-end-line="247" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/target/release/build/winapi-x86_64-pc-windows-gnu-3ef6fa9c8a33f20e/output">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/target/release/build/winapi-x86_64-pc-windows-gnu-3ef6fa9c8a33f20e/root-output">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/target/release/.fingerprint/ygg-e65dc472af233949/test-lib-ygg-e65dc472af233949.json">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-pc-windows-gnu/lib/rustlib/src/rust/src/libcore/cmp.rs" />
+    <entry file="file://$PROJECT_DIR$/target/release/build/winapi-x86_64-pc-windows-gnu-3ef6fa9c8a33f20e/output" />
+    <entry file="file://$PROJECT_DIR$/target/release/build/winapi-x86_64-pc-windows-gnu-3ef6fa9c8a33f20e/root-output" />
+    <entry file="file://$PROJECT_DIR$/target/release/.fingerprint/ygg-e65dc472af233949/test-lib-ygg-e65dc472af233949.json" />
     <entry file="file://$PROJECT_DIR$/src/uuid/mod.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
@@ -574,24 +527,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/solution/ShortestPath/ShortestPath.rs" />
     <entry file="file://$PROJECT_DIR$/src/solution/solvers/ShortestPath.rs" />
-    <entry file="file://$PROJECT_DIR$/src/graph_elements/mod.rs">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/solution/ShortestPath/mod.rs" />
-    <entry file="file://$PROJECT_DIR$/src/graph_elements/node.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="11" column="1" selection-start-line="11" selection-start-column="1" selection-end-line="11" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/lib.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/solutions/solvers/mod.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="34">
@@ -613,36 +549,89 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-pc-windows-gnu/lib/rustlib/src/rust/src/libcore/fmt/mod.rs">
+    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-pc-windows-gnu/lib/rustlib/src/rust/src/libcore/fmt/mod.rs" />
+    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-pc-windows-gnu/lib/rustlib/src/rust/src/libcore/clone.rs" />
+    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-pc-windows-gnu/lib/rustlib/src/rust/src/libcore/marker.rs" />
+    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-pc-windows-gnu/lib/rustlib/src/rust/src/libstd/collections/hash/map.rs" />
+    <entry file="file://$PROJECT_DIR$/src/metrics/uom.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="77">
-          <caret line="602" column="49" lean-forward="true" selection-start-line="602" selection-start-column="12" selection-end-line="602" selection-end-column="49" />
+        <state relative-caret-position="2302">
+          <caret line="167" column="1" lean-forward="true" selection-start-line="167" selection-start-column="1" selection-end-line="167" selection-end-column="1" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/solutions/solvers/shortest_path.rs">
+    <entry file="file://$PROJECT_DIR$/src/metrics/formulas.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="10" column="79" lean-forward="true" selection-start-line="10" selection-start-column="79" selection-end-line="10" selection-end-column="79" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/libcore/iter/traits.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="387">
+          <caret line="354" column="7" selection-start-line="354" selection-start-column="7" selection-end-line="354" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/libcore/iter/iterator.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="2168" column="18" lean-forward="true" selection-start-line="2168" selection-start-column="18" selection-end-line="2168" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/solutions/optimize_within_routes.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="68" selection-start-line="6" selection-start-column="68" selection-end-line="6" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/solutions/optimize_between_routes.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="69" selection-start-line="6" selection-start-column="69" selection-end-line="6" selection-end-column="69" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lib.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/solutions/shortest_path.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="98" selection-start-line="9" selection-start-column="98" selection-end-line="9" selection-end-column="98" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/bin/gdb/renderers/default/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="335">
+          <caret line="32" selection-start-line="32" selection-end-line="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/libcore/convert.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="370" column="7" selection-start-line="370" selection-start-column="7" selection-end-line="370" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/graph_elements/node.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="218">
+          <caret line="38" selection-start-line="38" selection-end-line="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/graph_elements/mod.rs">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-pc-windows-gnu/lib/rustlib/src/rust/src/libcore/clone.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="350">
-          <caret line="108" column="10" selection-start-line="108" selection-start-column="10" selection-end-line="108" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-pc-windows-gnu/lib/rustlib/src/rust/src/libcore/marker.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1191">
-          <caret line="296" column="10" selection-start-line="296" selection-start-column="10" selection-end-line="296" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-pc-windows-gnu/lib/rustlib/src/rust/src/libstd/collections/hash/map.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="484">
-          <caret line="1420" column="11" selection-start-line="1420" selection-start-column="11" selection-end-line="1420" selection-end-column="11" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/graph_elements/edge.rs">
       <provider selected="true" editor-type-id="text-editor">
@@ -653,82 +642,62 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/solutions/build_routes.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" selection-start-line="10" selection-end-line="10" />
+        <state relative-caret-position="136">
+          <caret line="8" column="8" selection-start-line="8" selection-start-column="8" selection-end-line="8" selection-end-column="8" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/solutions/optimize_between_routes.rs">
+    <entry file="file://$USER_HOME$/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/libcore/clone.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" selection-start-line="10" selection-end-line="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/solutions/optimize_within_routes.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" selection-start-line="10" selection-end-line="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/metrics/uom.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2302">
-          <caret line="167" column="1" lean-forward="true" selection-start-line="167" selection-start-column="1" selection-end-line="167" selection-end-column="1" />
+        <state relative-caret-position="226">
+          <caret line="208" column="11" selection-start-line="208" selection-start-column="11" selection-end-line="208" selection-end-column="11" />
+          <folding>
+            <element signature="e#7207#7208#0" expanded="true" />
+            <element signature="e#7235#7236#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/solutions/mod.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
-          <caret line="49" column="121" lean-forward="true" selection-start-line="49" selection-start-column="106" selection-end-line="49" selection-end-column="121" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/metrics/formulas.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="79" lean-forward="true" selection-start-line="10" selection-start-column="79" selection-end-line="10" selection-end-column="79" />
+        <state relative-caret-position="179">
+          <caret line="64" selection-start-line="64" selection-end-line="64" />
           <folding>
-            <element signature="e#747#762#0" />
-            <element signature="e#851#1667#0" />
-            <element signature="e#1756#2376#0" />
+            <element signature="e#1555#1556#0" expanded="true" />
+            <element signature="e#1588#1589#0" expanded="true" />
+            <element signature="e#2449#2450#0" expanded="true" />
+            <element signature="e#2476#2477#0" expanded="true" />
+            <element signature="e#2549#2550#0" expanded="true" />
+            <element signature="e#2600#2601#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/solutions/shortest_path.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="15" lean-forward="true" selection-start-line="15" selection-end-line="15" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/graph_elements/graph.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="783">
-          <caret line="113" column="16" selection-start-line="113" selection-start-column="16" selection-end-line="113" selection-end-column="16" />
+        <state relative-caret-position="123">
+          <caret line="110" column="22" selection-start-line="110" selection-start-column="22" selection-end-line="110" selection-end-column="22" />
           <folding>
-            <element signature="e#4102#4103#0" expanded="true" />
-            <element signature="e#4128#4129#0" expanded="true" />
-            <element signature="e#4195#4196#0" expanded="true" />
-            <element signature="e#4221#4222#0" expanded="true" />
+            <element signature="e#3395#3396#0" expanded="true" />
+            <element signature="e#3426#3427#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/solutions/solvers/shortest_path.rs">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/solutions/shortest_tour.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="139">
+          <caret line="48" column="61" selection-start-line="48" selection-start-column="37" selection-end-line="48" selection-end-column="61" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="13" selection-start-line="13" selection-end-line="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/solutions/shortest_tour.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="14" selection-start-line="14" selection-end-line="14" />
+        <state relative-caret-position="17">
+          <caret line="13" column="19" selection-start-line="13" selection-start-column="16" selection-end-line="13" selection-end-column="19" />
         </state>
       </provider>
     </entry>

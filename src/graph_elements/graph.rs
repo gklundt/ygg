@@ -7,6 +7,7 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 use crate::metrics::formulas;
+use std::collections::VecDeque;
 
 #[derive(Debug)]
 pub struct Graph {
@@ -14,7 +15,9 @@ pub struct Graph {
     edges: HashMap<Rc<Guid>, Rc<Edge>>,
     nodes: HashMap<Rc<Guid>, Rc<Node>>,
     node_connections: HashMap<Rc<Guid>, HashMap<Rc<Guid>, Rc<Guid>>>,
+    // source, (target, edge)[]
     edge_connections: HashMap<Rc<Guid>, (Rc<Guid>, Rc<Guid>)>,
+    // edge, (source, target)
     sub_graphs: HashMap<Rc<Guid>, Rc<Graph>>,
     named_graphs: HashMap<Rc<String>, Rc<Guid>>,
     named_nodes: HashMap<Rc<String>, Rc<Guid>>,
@@ -43,7 +46,7 @@ enum ActionState {
 
 impl fmt::Display for Graph {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut s: String = String::from(format!("Graph Guid: {}\n",self.guid.to_string()));
+        let mut s: String = String::from(format!("Graph Guid: {}\n", self.guid.to_string()));
         s.push_str("Nodes:\n");
         for node in &self.nodes {
             let ns = format!("\tNode:{}\n", node.1);
@@ -85,7 +88,7 @@ impl Graph {
         }
     }
 
-    pub fn replicate(&self) -> Self {
+    pub fn replicate_all(&self) -> Self {
         let mut g = Graph::new();
         for edge in &self.edges { g.edges.insert(edge.0.clone(), edge.1.clone()); }
         for node in &self.nodes { g.nodes.insert(node.0.clone(), node.1.clone()); }
@@ -95,10 +98,19 @@ impl Graph {
         g
     }
 
-    pub fn add_sub_graph(&mut self, sub_graph: Rc<Graph>){
+    pub fn replicate_nodes(&self) -> Self {
+        let mut g = Graph::new();
+        for node in &self.nodes { g.nodes.insert(node.0.clone(), node.1.clone()); }
+        g
+    }
+
+    pub fn add_sub_graph(&mut self, sub_graph: Rc<Graph>) {
         self.sub_graphs.insert(sub_graph.get_guid(), sub_graph);
     }
 
+    pub fn get_sub_graphs(&self) -> &HashMap<Rc<Guid>, Rc<Graph>> {
+        &self.sub_graphs
+    }
     pub fn get_graph(&self, graph_guid: Rc<Guid>) -> Option<&Self> {
         match Rc::ptr_eq(&self.guid, &graph_guid) {
             true => Some(self),
@@ -138,6 +150,10 @@ impl Graph {
         &self.edges
     }
 
+    pub fn get_edge_connections(&mut self) -> &HashMap<Rc<Guid>, (Rc<Guid>, Rc<Guid>)> {
+        &self.edge_connections
+    }
+
     pub fn get_degree(&self, node: Rc<Guid>) -> usize {
         match self.node_connections.get(&node) {
             Some(conn) => conn.len(),
@@ -154,7 +170,37 @@ impl Graph {
         self.nodes.insert(guid, node);
     }
 
-    pub fn add_connection(&mut self, connection: (Rc<Node>, Rc<Node>)) {
+    pub fn add_connected_node_guids(&mut self, connection: (Rc<Guid>, Rc<Guid>)) {
+        if let (Some(source_node), Some(target_node)) = (self.get_node(connection.0), self.get_node(connection.1)) {
+            self.add_connected_nodes((source_node, target_node))
+        }
+    }
+
+    pub fn get_path_for_node(&self, node_guid: Rc<Guid>) -> Option<VecDeque<Rc<Guid>>> {
+        let degree = self.get_degree(node_guid.clone()) as u32;
+        let degree_test = degree == 1 || degree == 2;
+        match degree_test {
+            false => None,
+            true => {
+                let mut path = VecDeque::new();
+
+                let mut connections = Vec::new();
+                if let Some(map) = self.node_connections.get(&node_guid.clone()) {
+                    for node_connection in map {
+                        connections.push(node_connection.0.clone());
+                    }
+                }
+
+                path.push_front(node_guid.clone());
+                path.push_back(connections[0].clone());
+                if let true = degree == 2 { path.push_front(connections[1].clone()) };
+                Some(self.get_path_for_node_(path))
+            }
+        }
+    }
+
+
+    pub fn add_connected_nodes(&mut self, connection: (Rc<Node>, Rc<Node>)) {
         if let true = Rc::ptr_eq(&connection.0, &connection.1) {
             return;
         };
@@ -212,6 +258,13 @@ impl Graph {
         }
     }
 
+    pub fn remove_all_edges(&mut self) {
+        let p = self.edges.clone();
+        for e in p {
+            self.remove_edge_connection(e.1);
+        }
+    }
+
     pub fn connect_all_nodes(&mut self) {
         let mut h: Vec<Rc<Node>> = Vec::new();
         for src in self.nodes.values() {
@@ -221,7 +274,7 @@ impl Graph {
         for i in { 0..h.len() } {
             for j in { i + 1..h.len() } {
                 //for j in { 0..h.len() } {
-                self.add_connection((Rc::clone(&h[i]), Rc::clone(&h[j])));
+                self.add_connected_nodes((Rc::clone(&h[i]), Rc::clone(&h[j])));
             }
         }
         println!("Edges Created: {}.", self.edges.len());
@@ -229,6 +282,32 @@ impl Graph {
 }
 
 impl Graph {
+    fn get_path_for_node_(&self, mut path: VecDeque<Rc<Guid>>) -> VecDeque<Rc<Guid>> {
+        if let Some(left_node) = path.front() {
+            if let Some(map) = self.node_connections.get(left_node) {
+                for node_connection in map {
+                    if let false = path.contains(node_connection.0) {
+                        path.push_front(node_connection.0.clone());
+                        path = self.get_path_for_node_(path);
+                    }
+                }
+            }
+        }
+
+        if let Some(right_node) = path.back() {
+            if let Some(map) = self.node_connections.get(right_node) {
+                for node_connection in map {
+                    if let false = path.contains(node_connection.0) {
+                        path.push_back(node_connection.0.clone());
+                        path = self.get_path_for_node_(path);
+                    }
+                }
+            }
+        }
+
+        path
+    }
+
     fn remove_node_connection_(&mut self, connection: &(Rc<Node>, Rc<Node>)) {
         if let Some(map) = self.node_connections.get_mut(&connection.0.get_guid()) {
             if let Some(edge_guid) = map.remove(&connection.1.get_guid()) {
