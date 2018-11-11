@@ -37,8 +37,10 @@ pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKin
                 let i = my_graph.get_degree(edge_distance.0.clone()) as u32;
                 let j = my_graph.get_degree(edge_distance.2.clone()) as u32;
 
-                let short_test = i == 0 || j == 0;
-                if let true = short_test {
+                let zero_test = i == 0 || j == 0;
+                let two_test = i < 2 && j < 2;
+                let add_test = zero_test && two_test;
+                if let true = add_test {
                     my_graph.add_connected_node_guids((edge_distance.0.clone(), edge_distance.2.clone()));
                 }
 

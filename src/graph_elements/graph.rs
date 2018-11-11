@@ -176,6 +176,29 @@ impl Graph {
         }
     }
 
+    pub fn get_tree_for_node(&self, node_guid: Rc<Guid>) -> Option<VecDeque<Rc<Guid>>> {
+        let mut tree = VecDeque::new();
+        tree.push_back(node_guid.clone());
+        self.get_tree_for_node_(tree)
+    }
+
+    fn get_tree_for_node_(&self, mut tree: VecDeque<Rc<Guid>>) -> Option<VecDeque<Rc<Guid>>> {
+        if let Some(last_node) = tree.back() {
+            if let Some(connections) = self.node_connections.get(last_node) {
+                let mut ret: Option<VecDeque<Rc<Guid>>> = None;
+                for connection in connections {
+                    if let false = tree.clone().contains(&connection.0.clone()) {
+                        tree.push_back(connection.0.clone());
+                        if let Some(sub_tree) = self.get_tree_for_node_(tree.clone()) {
+                            ret = Some(sub_tree);
+                        } else { ret = None }
+                    } else { ret = None }
+                }
+                ret
+            } else { Some(tree) }
+        } else { Some(tree) }
+    }
+
     pub fn get_path_for_node(&self, node_guid: Rc<Guid>) -> Option<VecDeque<Rc<Guid>>> {
         let degree = self.get_degree(node_guid.clone()) as u32;
         let degree_test = degree == 1 || degree == 2;
@@ -195,6 +218,19 @@ impl Graph {
                 path.push_back(connections[0].clone());
                 if let true = degree == 2 { path.push_front(connections[1].clone()) };
                 Some(self.get_path_for_node_(path))
+
+
+//                let test_path = self.get_path_for_node_(path.clone()).clone();
+//
+//                let mut ret: Option<VecDeque<Rc<Guid>>> = Some(self.get_path_for_node_(path));
+//                for item in test_path {
+//                    let deg = self.get_degree(item.clone()) as u32;
+//                    if let true = deg > 2 {
+//                        ret = None;
+//                        break;
+//                    }
+//                }
+//                ret
             }
         }
     }
@@ -273,7 +309,7 @@ impl Graph {
         println!("Original Vector Length: {} items.", h.len());
         for i in { 0..h.len() } {
             for j in { i + 1..h.len() } {
-                //for j in { 0..h.len() } {
+//for j in { 0..h.len() } {
                 self.add_connected_nodes((Rc::clone(&h[i]), Rc::clone(&h[j])));
             }
         }

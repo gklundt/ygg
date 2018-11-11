@@ -7,10 +7,37 @@ use ygg::metrics::uom::DistanceKind;
 use ygg::metrics::uom::PositionKind;
 use ygg::solutions::ProblemKind;
 use ygg::solutions::Solution;
+//use std::rc::Rc;
 
 fn main() {
     let mut g = Graph::new();
 
+
+//    let n1: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(80.0), y: DistanceKind::Meters(90.0) }), Some("A".to_string()));
+//    let n2: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(60.0), y: DistanceKind::Meters(55.0) }), Some("B".to_string()));
+//    let n3: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(45.0), y: DistanceKind::Meters(18.0) }), Some("C".to_string()));
+//    let n4: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(38.0), y: DistanceKind::Meters(30.0) }), Some("D".to_string()));
+//
+//    g.add_node(n1.clone());
+//    g.add_node(n2.clone());
+//    g.add_node(n3.clone());
+//    g.add_node(n4.clone());
+//
+//    g.add_connected_nodes((n1.clone(), n2.clone()));
+//    g.add_connected_nodes((n3.clone(), n2.clone()));
+//    g.add_connected_nodes((n3.clone(), n4.clone()));
+//
+//    println!("Graph: \n{}", g);
+//
+//    println!("Tree: \n");
+//    if let Some(thing) = g.get_path_for_node(n1.get_guid().clone()) {
+//        for t in thing {
+//            println!("\t{}", t)
+//        }
+//    } else { println!("Not a path"); }
+
+
+// Test for Shortest Tour Greedy
     for i in 0..500 {
         let name = format!("Node: {}", i);
 
@@ -25,6 +52,9 @@ fn main() {
             )
         );
     }
+
+
+    g.connect_all_nodes();
 
 //    let n1: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(80.0), y: DistanceKind::Meters(90.0) }), Some("A".to_string()));
 //    let n2: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(60.0), y: DistanceKind::Meters(55.0) }), Some("B".to_string()));
@@ -42,7 +72,7 @@ fn main() {
 //    g.add_node(n6.clone());
 //    g.add_node(n7.clone());
 
-    g.connect_all_nodes();
+//    g.connect_all_nodes();
 
     //println!("{}", g);
 
@@ -53,20 +83,20 @@ fn main() {
 
     solve.solve(&pk);
 
-    println!("Original Graph: {}", solve.get_graph());
+    // println!("Original Graph: {}", solve.get_graph());
 
-    for g in solve.get_graph().get_sub_graphs().clone(){
-        println!("The Minimum Spanning Tree: {}", g.1);
-        if let Some(node) = g.1.get_nodes().iter().next(){
-            if let Some(path) =  g.1.get_path_for_node(node.0.clone()){
-                for p in path{
-                    println!("{} - {}", p, g.1.get_node(p.clone()).unwrap());
+    for g in solve.get_graph().get_sub_graphs().clone() {
+        // println!("The Minimum Spanning Tree: {}", g.1);
+        if let Some(node) = g.1.get_nodes().iter().next() {
+            if let Some(path) = g.1.get_path_for_node(node.0.clone()) {
+                for p in path {
+                    let the_node = g.1.get_node(p.clone()).unwrap();
+                    let the_degree = g.1.get_degree(the_node.clone().get_guid());
+                    println!("{}({}) - {}", p, the_degree, the_node );
                 }
             }
         }
     }
-
-
 }
 
 
