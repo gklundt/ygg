@@ -1,5 +1,6 @@
 #![feature(test)]
 #![feature(extern_crate_item_prelude)]
+#![feature(vec_remove_item)]
 extern crate test;
 
 pub mod graph_elements;

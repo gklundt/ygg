@@ -3,6 +3,7 @@ use crate::metrics::uom::DistanceKind;
 use crate::metrics::uom::Si;
 use std::cmp::Ordering;
 use std::rc::Rc;
+use crate::graph_elements::graph::TreeCache;
 
 
 pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKind) {
@@ -32,24 +33,27 @@ pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKin
                 });
 
             my_graph.remove_all_edges();
+            let node_count = my_graph.get_nodes().len();
 
+            let mut tree_cache = TreeCache::new();
             for edge_distance in edge_distances {
-                let i = my_graph.get_degree(edge_distance.0.clone()) as u32;
-                let j = my_graph.get_degree(edge_distance.2.clone()) as u32;
+//                let i = my_graph.get_degree(edge_distance.0.clone()) as u32;
+//                let j = my_graph.get_degree(edge_distance.2.clone()) as u32;
+//
+//                // attach an isolated node, no risk of cycle
+//                let zero_test = i == 0 || j == 0; // at least one is zero
+//                let two_test = i < 2 && j < 2; // both have degree less than 2
+//                let add_test = zero_test && two_test;
+//                if let true = add_test {
+//                    my_graph.add_connected_node_guids((edge_distance.0.clone(), edge_distance.2.clone()));
+//                    continue;
+//                }
 
-                let zero_test = i == 0 || j == 0;
-                let two_test = i < 2 && j < 2;
-                let add_test = zero_test && two_test;
-                if let true = add_test {
-                    my_graph.add_connected_node_guids((edge_distance.0.clone(), edge_distance.2.clone()));
-                    continue;
-                }
-
-                if let Some(p) = my_graph.get_tree_for_node(edge_distance.0.clone()) {
+                if let Some(p) = my_graph.get_tree_for_node(edge_distance.0.clone(), Some(&mut tree_cache)) {
                     if let false = p.contains(&edge_distance.2.clone()) {
                         my_graph.add_connected_node_guids((edge_distance.0.clone(), edge_distance.2.clone()));
                     }
-                    if let true = p.len() == my_graph.get_nodes().len() { break; }
+                    if let true = p.len() == node_count { break; }
                 }
             }
             solution.add_sub_graph(Rc::new(my_graph));

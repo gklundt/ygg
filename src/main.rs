@@ -107,7 +107,7 @@ fn main() {
     for g in next_solve.get_graph().get_sub_graphs().clone() {
         println!("MST Graph: {}", g.1);
         if let Some(node) = g.1.get_nodes().iter().next() {
-            if let Some(path) = g.1.get_tree_for_node(node.0.clone()) {
+            if let Some(path) = g.1.get_tree_for_node(node.0.clone(), None) {
                 for p in path {
                     let the_node = g.1.get_node(p.clone()).unwrap();
                     let the_degree = g.1.get_degree(the_node.clone().get_guid());

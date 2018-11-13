@@ -44,6 +44,50 @@ enum ActionState {
     AddBoth,
 }
 
+pub struct TreeCache {
+    cached_trees: Vec<Vec<Rc<Guid>>>,
+}
+
+
+impl TreeCache {
+    pub fn new() -> Self {
+        TreeCache {
+            cached_trees: Vec::new()
+        }
+    }
+
+    pub fn get_vector(&mut self, node_guid: Rc<Guid>) -> Vec<Rc<Guid>> {
+        let mut found: Option<usize> = None;
+        for i in 0..self.cached_trees.len() {
+            if let true = self.cached_trees[i].contains(&node_guid) {
+                println!("caches: {} items {}",self.cached_trees.len(), self.cached_trees[i].len());
+                if let Some(j) = found {
+                    if let true = self.cached_trees[i].len() <= self.cached_trees[j].len() {
+                        found = Some(i);
+                    }
+                } else { found = Some(i); }
+            }
+        }
+        match found {
+            None => {
+                let mut v = Vec::new();
+                v.push(node_guid.clone());
+                self.cached_trees.clear();
+                v
+            }
+            Some(i) => {
+                let ret = self.cached_trees.remove(i);
+                self.cached_trees.clear();
+                ret
+            }
+        }
+    }
+
+    pub fn push_vector(&mut self, tree: Vec<Rc<Guid>>) {
+        self.cached_trees.push(tree);
+    }
+}
+
 impl fmt::Display for Graph {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut s: String = String::from(format!("Graph Guid: {}\n", self.guid.to_string()));
@@ -111,6 +155,7 @@ impl Graph {
     pub fn get_sub_graphs(&self) -> &HashMap<Rc<Guid>, Rc<Graph>> {
         &self.sub_graphs
     }
+
     pub fn get_graph(&self, graph_guid: Rc<Guid>) -> Option<&Self> {
         match Rc::ptr_eq(&self.guid, &graph_guid) {
             true => Some(self),
@@ -176,17 +221,43 @@ impl Graph {
         }
     }
 
-    pub fn get_tree_for_node(&self, node_guid: Rc<Guid>) -> Option<Vec<Rc<Guid>>> {
-        let mut tree = Vec::new();
-        tree.push(node_guid.clone());
 
-        let ret = self.get_tree_for_node_(tree, 0);
+    pub fn get_tree_for_node(&self, node_guid: Rc<Guid>, cache: Option<&mut TreeCache>) -> Option<Vec<Rc<Guid>>> {
+        match cache {
+            Some(c) => { self.get_tree_for_node_cached_(&node_guid, c) }
+            None => { self.get_tree_for_node_no_cache_(&node_guid) }
+        }
+    }
+
+    fn get_tree_for_node_no_cache_(&self, node_guid: &Rc<Guid>) -> Option<Vec<Rc<Guid>>> {
+        let mut v = Vec::new();
+        v.push(node_guid.clone());
+        let ret = self.get_tree_for_node_(v, 0);
         match ret.1 {
             true => None,
             false => Some(ret.0),
         }
     }
 
+    fn get_tree_for_node_cached_(&self, node_guid: &Rc<Guid>, c: &mut TreeCache) -> Option<Vec<Rc<Guid>>> {
+        let mut pos: usize = 0;
+        let v = c.get_vector(node_guid.clone());
+        for i in 0..v.len() {
+            if let true = Rc::ptr_eq(&node_guid.clone(), &v[i]) {
+                pos = i;
+                break;
+            }
+        }
+
+        let ret = self.get_tree_for_node_(v, pos);
+        match ret.1 {
+            true => None,
+            false => {
+                c.push_vector(ret.0.clone());
+                Some(ret.0)
+            }
+        }
+    }
 
     pub fn get_ordered_path_for_node(&self, node_guid: Rc<Guid>) -> Option<Vec<Rc<Guid>>> {
         let mut find = node_guid.clone();
@@ -211,7 +282,7 @@ impl Graph {
             false => match ret.2 {
                 false => None, // not a path, vertex found with degree > 2
                 true => Some(ret.0), // yay, a path
-            } ,
+            },
         }
     }
 
