@@ -7,12 +7,12 @@ use ygg::metrics::uom::DistanceKind;
 use ygg::metrics::uom::PositionKind;
 use ygg::solutions::ProblemKind;
 use ygg::solutions::Solution;
-//use std::rc::Rc;
+
 
 fn main() {
-    let mut g = Graph::new();
-
-
+    let mut primer =Graph::new();
+//
+//
 //    let n1: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(80.0), y: DistanceKind::Meters(90.0) }), Some("A".to_string()));
 //    let n2: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(60.0), y: DistanceKind::Meters(55.0) }), Some("B".to_string()));
 //    let n3: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(45.0), y: DistanceKind::Meters(18.0) }), Some("C".to_string()));
@@ -25,28 +25,30 @@ fn main() {
 //
 //    g.add_connected_nodes((n1.clone(), n2.clone()));
 //    g.add_connected_nodes((n3.clone(), n2.clone()));
-//    g.add_connected_nodes((n3.clone(), n4.clone()));
+//    g.add_connected_nodes((n4.clone(), n3.clone()));
+//    g.add_connected_nodes((n4.clone(), n4.clone()));
 //
 //    println!("Graph: \n{}", g);
 //
 //    println!("Tree: \n");
-//    if let Some(thing) = g.get_path_for_node(n1.get_guid().clone()) {
+//    if let Some(thing) = g.get_path_for_node(n2.get_guid().clone()) {
 //        for t in thing {
-//            println!("\t{}", t)
+//            println!("\tTree Member: {}", t)
 //        }
-//    } else { println!("Not a path"); }
+//    } else { println!("Not a Path"); }
 
 
 // Test for Shortest Tour Greedy
-    for i in 0..500 {
+    for i in 0..10 {
         let name = format!("Node: {}", i);
 
-        g.add_node(
+        primer.add_node(
             Node::new(
                 Some(
                     PositionKind::TwoDimensionEuclidean {
-                        x: DistanceKind::Meters(thread_rng().gen_range(1.0, 1000.0)),
-                        y: DistanceKind::Meters(thread_rng().gen_range(1.0, 1000.0)),
+                        x: DistanceKind::Meters(thread_rng().gen_range(1, 100) as f64),
+                        y: DistanceKind::Meters(thread_rng().gen_range(1, 100) as f64),
+                        //y: DistanceKind::Meters(0.0),
                     }),
                 Some(name),
             )
@@ -54,7 +56,7 @@ fn main() {
     }
 
 
-    g.connect_all_nodes();
+    primer.connect_all_nodes();
 
 //    let n1: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(80.0), y: DistanceKind::Meters(90.0) }), Some("A".to_string()));
 //    let n2: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(60.0), y: DistanceKind::Meters(55.0) }), Some("B".to_string()));
@@ -77,26 +79,46 @@ fn main() {
     //println!("{}", g);
 
 
-    let pk = ProblemKind::ShortestTour { graph_guid: g.get_guid() };
+    let g = primer.replicate_all();
+
+    let pk = ProblemKind::GreedyTour { graph_guid: g.get_guid() };
     let mut solve = Solution::new(g);
-
-
     solve.solve(&pk);
 
-    // println!("Original Graph: {}", solve.get_graph());
-
     for g in solve.get_graph().get_sub_graphs().clone() {
-        // println!("The Minimum Spanning Tree: {}", g.1);
+
+        println!("Greedy Tour Graph: {}", g.1);
         if let Some(node) = g.1.get_nodes().iter().next() {
-            if let Some(path) = g.1.get_path_for_node(node.0.clone()) {
+            if let Some(path) = g.1.get_ordered_path_for_node(node.0.clone()) {
                 for p in path {
                     let the_node = g.1.get_node(p.clone()).unwrap();
                     let the_degree = g.1.get_degree(the_node.clone().get_guid());
-                    println!("{}({}) - {}", p, the_degree, the_node );
+                    println!("{}({}) - {}", p, the_degree, the_node);
                 }
             }
         }
     }
+
+    let next = primer.replicate_all();
+    let next_pk = ProblemKind::MinimumSpanningTree { graph_guid: next.get_guid() };
+    let mut next_solve = Solution::new(next);
+    next_solve.solve(&next_pk);
+
+    for g in next_solve.get_graph().get_sub_graphs().clone() {
+        println!("MST Graph: {}", g.1);
+        if let Some(node) = g.1.get_nodes().iter().next() {
+            if let Some(path) = g.1.get_tree_for_node(node.0.clone()) {
+                for p in path {
+                    let the_node = g.1.get_node(p.clone()).unwrap();
+                    let the_degree = g.1.get_degree(the_node.clone().get_guid());
+                    println!("{}({}) - {}", p, the_degree, the_node);
+                }
+            }
+        }
+    }
+
+
+
 }
 
 

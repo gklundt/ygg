@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 use crate::metrics::formulas;
-use std::collections::VecDeque;
+
 
 #[derive(Debug)]
 pub struct Graph {
@@ -176,63 +176,63 @@ impl Graph {
         }
     }
 
-    pub fn get_tree_for_node(&self, node_guid: Rc<Guid>) -> Option<VecDeque<Rc<Guid>>> {
-        let mut tree = VecDeque::new();
-        tree.push_back(node_guid.clone());
-        self.get_tree_for_node_(tree)
+    pub fn get_tree_for_node(&self, node_guid: Rc<Guid>) -> Option<Vec<Rc<Guid>>> {
+        let mut tree = Vec::new();
+        tree.push(node_guid.clone());
+
+        let ret = self.get_tree_for_node_(tree, 0);
+        match ret.1 {
+            true => None,
+            false => Some(ret.0),
+        }
     }
 
-    fn get_tree_for_node_(&self, mut tree: VecDeque<Rc<Guid>>) -> Option<VecDeque<Rc<Guid>>> {
-        if let Some(last_node) = tree.back() {
-            if let Some(connections) = self.node_connections.get(last_node) {
-                let mut ret: Option<VecDeque<Rc<Guid>>> = None;
-                for connection in connections {
-                    if let false = tree.clone().contains(&connection.0.clone()) {
-                        tree.push_back(connection.0.clone());
-                        if let Some(sub_tree) = self.get_tree_for_node_(tree.clone()) {
-                            ret = Some(sub_tree);
-                        } else { ret = None }
-                    } else { ret = None }
+
+    pub fn get_ordered_path_for_node(&self, node_guid: Rc<Guid>) -> Option<Vec<Rc<Guid>>> {
+        let mut find = node_guid.clone();
+        if let Some(nodes) = self.get_path_for_node(node_guid.clone()) {
+            for node in nodes {
+                if let true = self.get_degree(node.clone()) == 1 {
+                    find = node;
+                    break;
                 }
-                ret
-            } else { Some(tree) }
-        } else { Some(tree) }
-    }
-
-    pub fn get_path_for_node(&self, node_guid: Rc<Guid>) -> Option<VecDeque<Rc<Guid>>> {
-        let degree = self.get_degree(node_guid.clone()) as u32;
-        let degree_test = degree == 1 || degree == 2;
-        match degree_test {
-            false => None,
-            true => {
-                let mut path = VecDeque::new();
-
-                let mut connections = Vec::new();
-                if let Some(map) = self.node_connections.get(&node_guid.clone()) {
-                    for node_connection in map {
-                        connections.push(node_connection.0.clone());
-                    }
-                }
-
-                path.push_front(node_guid.clone());
-                path.push_back(connections[0].clone());
-                if let true = degree == 2 { path.push_front(connections[1].clone()) };
-                Some(self.get_path_for_node_(path))
-
-
-//                let test_path = self.get_path_for_node_(path.clone()).clone();
-//
-//                let mut ret: Option<VecDeque<Rc<Guid>>> = Some(self.get_path_for_node_(path));
-//                for item in test_path {
-//                    let deg = self.get_degree(item.clone()) as u32;
-//                    if let true = deg > 2 {
-//                        ret = None;
-//                        break;
-//                    }
-//                }
-//                ret
             }
         }
+        self.get_path_for_node(find)
+    }
+
+    pub fn get_path_for_node(&self, node_guid: Rc<Guid>) -> Option<Vec<Rc<Guid>>> {
+        let mut path = Vec::new();
+        path.push(node_guid.clone());
+
+        let ret = self.get_path_for_node_(path, 0);
+        match ret.1 {
+            true => None, // a cycle was found
+            false => match ret.2 {
+                false => None, // not a path, vertex found with degree > 2
+                true => Some(ret.0), // yay, a path
+            } ,
+        }
+    }
+
+    fn get_path_for_node_(&self, mut path: Vec<Rc<Guid>>, pos: usize) -> (Vec<Rc<Guid>>, bool, bool) {
+        let mut cycle = false;
+        let mut is_path = true;
+        if let (Some(prev_node), Some(last_node)) =
+        (path.clone().get(pos), path.clone().last()) {
+            if let Some(connections) = self.node_connections.get(last_node) {
+                if let true = connections.len() > 2 { is_path = false; }
+                let my_pos = path.clone().len() - 1;
+                for connection in connections {
+                    if let true = Rc::ptr_eq(&connection.0.clone(), prev_node) { continue; }
+                    if let false = path.clone().contains(&connection.0.clone()) {
+                        path.push(connection.0.clone());
+                        path = self.get_path_for_node_(path, my_pos).0;
+                    } else { cycle = true; }
+                }
+            }
+        }
+        (path, cycle, is_path)
     }
 
 
@@ -318,31 +318,24 @@ impl Graph {
 }
 
 impl Graph {
-    fn get_path_for_node_(&self, mut path: VecDeque<Rc<Guid>>) -> VecDeque<Rc<Guid>> {
-        if let Some(left_node) = path.front() {
-            if let Some(map) = self.node_connections.get(left_node) {
-                for node_connection in map {
-                    if let false = path.contains(node_connection.0) {
-                        path.push_front(node_connection.0.clone());
-                        path = self.get_path_for_node_(path);
-                    }
+    fn get_tree_for_node_(&self, mut tree: Vec<Rc<Guid>>, pos: usize) -> (Vec<Rc<Guid>>, bool) {
+        let mut cycle = false;
+        if let (Some(prev_node), Some(last_node)) =
+        (tree.clone().get(pos), tree.clone().last()) {
+            if let Some(connections) = self.node_connections.get(last_node) {
+                let my_pos = tree.clone().len() - 1;
+                for connection in connections {
+                    if let true = Rc::ptr_eq(&connection.0.clone(), prev_node) { continue; }
+                    if let false = tree.clone().contains(&connection.0.clone()) {
+                        tree.push(connection.0.clone());
+                        tree = self.get_tree_for_node_(tree, my_pos).0;
+                    } else { cycle = true; }
                 }
             }
         }
-
-        if let Some(right_node) = path.back() {
-            if let Some(map) = self.node_connections.get(right_node) {
-                for node_connection in map {
-                    if let false = path.contains(node_connection.0) {
-                        path.push_back(node_connection.0.clone());
-                        path = self.get_path_for_node_(path);
-                    }
-                }
-            }
-        }
-
-        path
+        (tree, cycle)
     }
+
 
     fn remove_node_connection_(&mut self, connection: &(Rc<Node>, Rc<Node>)) {
         if let Some(map) = self.node_connections.get_mut(&connection.0.get_guid()) {

@@ -6,7 +6,7 @@ use std::rc::Rc;
 
 
 pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKind) {
-    if let solutions::ProblemKind::ShortestTour { graph_guid: g } = problem {
+    if let solutions::ProblemKind::GreedyTour { graph_guid: g } = problem {
         if let Some(og) = solution.get_graph().get_graph(g.clone()) {
             let mut edge_distances = Vec::new();
 

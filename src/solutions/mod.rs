@@ -1,8 +1,9 @@
 mod shortest_path;
-mod shortest_tour;
+mod greedy_tour;
 mod build_routes;
 mod optimize_within_routes;
 mod optimize_between_routes;
+mod minimum_spanning_tree;
 mod solvers;
 
 use std::rc::Rc;
@@ -14,7 +15,8 @@ use crate::graph_elements::graph::Graph;
 #[derive(Debug)]
 pub enum ProblemKind {
     ShortestPath { graph_guid: Rc<Guid>, start_node_guid: Rc<Guid>, end_node_guid: Rc<Guid> },
-    ShortestTour { graph_guid: Rc<Guid> },
+    GreedyTour { graph_guid: Rc<Guid> },
+    MinimumSpanningTree { graph_guid: Rc<Guid> },
     BuildRoutes { graph_guid: Rc<Guid> },
     OptimizeWithinRoutes { graph_guid: Rc<Guid> },
     OptimizeBetweenRoutes { graph_guid: Rc<Guid> },
@@ -25,11 +27,12 @@ impl fmt::Display for ProblemKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         match self {
             ProblemKind::ShortestPath { graph_guid: _, start_node_guid: _, end_node_guid: _ } => write!(f, "( ProblemKind::ShortestPath )"),
-            ProblemKind::ShortestTour { graph_guid: _ } => write!(f, "( ProblemKind::ShortestPath )"),
+            ProblemKind::GreedyTour { graph_guid: _ } => write!(f, "( ProblemKind::ShortestPath )"),
             ProblemKind::BuildRoutes { graph_guid: _ } => write!(f, "( ProblemKind::BuildRoutes )"),
             ProblemKind::OptimizeWithinRoutes { graph_guid: _ } => write!(f, "( ProblemKind::OptimizeWithinRoutes )"),
             ProblemKind::OptimizeBetweenRoutes { graph_guid: _ } => write!(f, "( ProblemKind::OptimizeBetweenRoutes )"),
             ProblemKind::Undefined {} => write!(f, "( ProblemKind::Undefined )"),
+            ProblemKind::MinimumSpanningTree { graph_guid: _ } => write!(f, "( ProblemKind::MinimumSpanningTree )"),
             //_ => write!(f, "( No Display )"),
         }
     }
@@ -50,10 +53,11 @@ impl Solution {
     pub fn solve(&mut self, problem: &ProblemKind) {
         match problem {
             ProblemKind::ShortestPath { graph_guid: _, start_node_guid: _, end_node_guid: _ } => self.solve_(problem, shortest_path::solve),
-            ProblemKind::ShortestTour { graph_guid: _ } => self.solve_(problem, shortest_tour::solve),
+            ProblemKind::GreedyTour { graph_guid: _ } => self.solve_(problem, greedy_tour::solve),
             ProblemKind::BuildRoutes { graph_guid: _ } => self.solve_(problem, build_routes::solve),
             ProblemKind::OptimizeWithinRoutes { graph_guid: _ } => self.solve_(problem, optimize_within_routes::solve),
             ProblemKind::OptimizeBetweenRoutes { graph_guid: _ } => self.solve_(problem, optimize_between_routes::solve),
+            ProblemKind::MinimumSpanningTree { graph_guid: _ } => self.solve_(problem, minimum_spanning_tree::solve),
             _ => (),
         }
     }
