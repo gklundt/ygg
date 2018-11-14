@@ -30,7 +30,7 @@ pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKin
         my_graph.remove_edge_connection(n);
     }
 
-    println!("{} ?= {}\n{}", og.get_guid(), my_graph.get_guid(), my_graph)
+    println!("{} ?= {}\n{}", og.get_graph_guid(), my_graph.get_graph_guid(), my_graph)
 }
 
 

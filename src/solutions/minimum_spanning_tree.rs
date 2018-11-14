@@ -3,8 +3,8 @@ use crate::metrics::uom::DistanceKind;
 use crate::metrics::uom::Si;
 use std::cmp::Ordering;
 use std::rc::Rc;
-use crate::graph_elements::graph::TreeCache;
-
+use crate::graph_elements::cache::TreeCache;
+use crate::graph_elements::node_pair::NodePair;
 
 pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKind) {
     if let solutions::ProblemKind::MinimumSpanningTree { graph_guid: g } = problem {
@@ -19,7 +19,7 @@ pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKin
                 if let Some(edge_connection) = re_hash_connections.get(edge.0) {
                     if let Some(distance_kind) = edge.1.get_distance() {
                         if let DistanceKind::Meters(distance) = distance_kind.to_si() {
-                            let val = (edge_connection.0.clone(), edge.0.clone(), edge_connection.1.clone(), distance);
+                            let val = (edge_connection.get_pair().0.clone(), edge.0.clone(), edge_connection.get_pair().1.clone(), distance);
                             edge_distances.push(val);
                         } else { return; } // SI unit is not meters for some reason.
                     } else { return; } // Distance must be set for edge or this doesn't work
@@ -27,35 +27,31 @@ pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKin
             }
 
             edge_distances.sort_by(|a, b|
-                match a.3.partial_cmp(&b.3) {
-                    Some(ordering) => { ordering }
-                    None => { Ordering::Equal }
+                {
+                    match a.3.partial_cmp(&b.3) {
+                        Some(ordering) => { ordering }
+                        None => { Ordering::Less }
+                    }
                 });
 
-            my_graph.remove_all_edges();
-            let node_count = my_graph.get_nodes().len();
 
+            my_graph.remove_all_edges();
+
+
+            let node_count = my_graph.get_nodes().len();
             let mut tree_cache = TreeCache::new();
             for edge_distance in edge_distances {
-//                let i = my_graph.get_degree(edge_distance.0.clone()) as u32;
-//                let j = my_graph.get_degree(edge_distance.2.clone()) as u32;
-//
-//                // attach an isolated node, no risk of cycle
-//                let zero_test = i == 0 || j == 0; // at least one is zero
-//                let two_test = i < 2 && j < 2; // both have degree less than 2
-//                let add_test = zero_test && two_test;
-//                if let true = add_test {
-//                    my_graph.add_connected_node_guids((edge_distance.0.clone(), edge_distance.2.clone()));
-//                    continue;
-//                }
-
-                if let Some(p) = my_graph.get_tree_for_node(edge_distance.0.clone(), Some(&mut tree_cache)) {
-                    if let false = p.contains(&edge_distance.2.clone()) {
-                        my_graph.add_connected_node_guids((edge_distance.0.clone(), edge_distance.2.clone()));
-                    }
-                    if let true = p.len() == node_count { break; }
+                let node_pair = Rc::new(NodePair::new((edge_distance.0, edge_distance.2)));
+                if let false = tree_cache.check_for_cycle(node_pair.clone()) {
+                    println!("Adding {} -> {}", node_pair.get_left().clone(), node_pair.get_right().clone());
+                    my_graph.add_connected_nodes_by_guid(node_pair.clone());
+                    tree_cache.push_edge(node_pair.clone());
+                } else {
+                    println!("Declining {} -> {}", node_pair.get_left().clone(), node_pair.get_right().clone());
                 }
+                if let true = tree_cache.node_pairs().len() - 1 == node_count { break; }
             }
+
             solution.add_sub_graph(Rc::new(my_graph));
         } // find the right sub-graph from the solution
     } // make sure we're solving the right problem

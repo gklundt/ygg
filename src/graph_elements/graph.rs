@@ -1,12 +1,13 @@
-use crate::uuid::guid_64::Guid;
 use crate::graph_elements::edge::Edge;
 use crate::graph_elements::node::Node;
+use crate::metrics::formulas;
 use crate::metrics::uom;
+use crate::uuid::guid_64::Guid;
+use crate::graph_elements::node_pair::NodePair;
 
 use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
-use crate::metrics::formulas;
 
 
 #[derive(Debug)]
@@ -16,7 +17,7 @@ pub struct Graph {
     nodes: HashMap<Rc<Guid>, Rc<Node>>,
     node_connections: HashMap<Rc<Guid>, HashMap<Rc<Guid>, Rc<Guid>>>,
     // source, (target, edge)[]
-    edge_connections: HashMap<Rc<Guid>, (Rc<Guid>, Rc<Guid>)>,
+    edge_connections: HashMap<Rc<Guid>, Rc<NodePair>>,
     // edge, (source, target)
     sub_graphs: HashMap<Rc<Guid>, Rc<Graph>>,
     named_graphs: HashMap<Rc<String>, Rc<Guid>>,
@@ -44,47 +45,80 @@ enum ActionState {
     AddBoth,
 }
 
-pub struct TreeCache {
-    cached_trees: Vec<Vec<Rc<Guid>>>,
+
+impl Graph {
+    pub fn get_tree_for_node(&self, node_guid: Rc<Guid>) -> Option<Vec<Rc<Guid>>> {
+        let mut params = (Vec::new(), Vec::new(), false);
+        println!("Sending in {}", self.nodes.get(&node_guid.clone()).unwrap().get_name());
+        params = self.get_tree_for_node_(node_guid, params);
+        match params.2 {
+            true => None,
+            false => Some(params.0.clone())
+        }
+    }
+
+    fn get_tree_for_node_(&self, current_node: Rc<Guid>, mut params: (Vec<Rc<Guid>>, Vec<Rc<NodePair>>, bool)) -> (Vec<Rc<Guid>>, Vec<Rc<NodePair>>, bool) {
+        params.0.push(current_node.clone());
+        for edge_connection in &self.edge_connections {
+            if let true = params.1.clone().contains(edge_connection.1) { continue; }
+            if let true = edge_connection.1.contains(current_node.clone()) {
+                if let Some(peer) = edge_connection.1.get_peer(current_node.clone()) {
+                    params.1.push(edge_connection.1.clone());
+                    params = self.get_tree_for_node_(peer, params);
+                }
+            }
+        }
+        params
+    }
 }
 
 
-impl TreeCache {
-    pub fn new() -> Self {
-        TreeCache {
-            cached_trees: Vec::new()
+impl Graph {
+    pub fn get_ordered_path_for_node(&self, node_guid: Rc<Guid>) -> Option<Vec<Rc<Guid>>> {
+        let mut find = node_guid.clone();
+        if let Some(nodes) = self.get_path_for_node(node_guid.clone()) {
+            for node in nodes {
+                if let true = self.get_degree_of_node(node.clone()) == 1 {
+                    find = node;
+                    break;
+                }
+            }
+        }
+        self.get_path_for_node(find)
+    }
+
+    pub fn get_path_for_node(&self, node_guid: Rc<Guid>) -> Option<Vec<Rc<Guid>>> {
+        let mut path = Vec::new();
+        path.push(node_guid.clone());
+
+        let ret = self.get_path_for_node_(path, 0);
+        match ret.1 {
+            true => None, // a cycle was found
+            false => match ret.2 {
+                false => None, // not a path, vertex found with degree > 2
+                true => Some(ret.0), // yay, a path
+            },
         }
     }
 
-    pub fn get_vector(&mut self, node_guid: Rc<Guid>) -> Vec<Rc<Guid>> {
-        let mut found: Option<usize> = None;
-        for i in 0..self.cached_trees.len() {
-            if let true = self.cached_trees[i].contains(&node_guid) {
-                println!("caches: {} items {}",self.cached_trees.len(), self.cached_trees[i].len());
-                if let Some(j) = found {
-                    if let true = self.cached_trees[i].len() <= self.cached_trees[j].len() {
-                        found = Some(i);
-                    }
-                } else { found = Some(i); }
+    fn get_path_for_node_(&self, mut path: Vec<Rc<Guid>>, pos: usize) -> (Vec<Rc<Guid>>, bool, bool) {
+        let mut cycle = false;
+        let mut is_path = true;
+        if let (Some(prev_node), Some(last_node)) =
+        (path.clone().get(pos), path.clone().last()) {
+            if let Some(connections) = self.node_connections.get(last_node) {
+                if let true = connections.len() > 2 { is_path = false; }
+                let my_pos = path.clone().len() - 1;
+                for connection in connections {
+                    if let true = Rc::ptr_eq(&connection.0.clone(), prev_node) { continue; }
+                    if let false = path.clone().contains(&connection.0.clone()) {
+                        path.push(connection.0.clone());
+                        path = self.get_path_for_node_(path, my_pos).0;
+                    } else { cycle = true; }
+                }
             }
         }
-        match found {
-            None => {
-                let mut v = Vec::new();
-                v.push(node_guid.clone());
-                self.cached_trees.clear();
-                v
-            }
-            Some(i) => {
-                let ret = self.cached_trees.remove(i);
-                self.cached_trees.clear();
-                ret
-            }
-        }
-    }
-
-    pub fn push_vector(&mut self, tree: Vec<Rc<Guid>>) {
-        self.cached_trees.push(tree);
+        (path, cycle, is_path)
     }
 }
 
@@ -109,8 +143,8 @@ impl fmt::Display for Graph {
             let ns: String = format!(
                 "\tEdge:{} connects \n\t\tnode: {} \n\t\tto:   {}\n",
                 self.edges.get(&(connection.0.clone())).unwrap(),
-                self.nodes.get(&(connection.1).0).unwrap(),
-                self.nodes.get(&(connection.1).1).unwrap()
+                self.nodes.get(&(connection.1).get_left()).unwrap(),
+                self.nodes.get(&(connection.1).get_right()).unwrap()
             );
             s.push_str(&ns);
         }
@@ -149,7 +183,7 @@ impl Graph {
     }
 
     pub fn add_sub_graph(&mut self, sub_graph: Rc<Graph>) {
-        self.sub_graphs.insert(sub_graph.get_guid(), sub_graph);
+        self.sub_graphs.insert(sub_graph.get_graph_guid(), sub_graph);
     }
 
     pub fn get_sub_graphs(&self) -> &HashMap<Rc<Guid>, Rc<Graph>> {
@@ -195,18 +229,18 @@ impl Graph {
         &self.edges
     }
 
-    pub fn get_edge_connections(&mut self) -> &HashMap<Rc<Guid>, (Rc<Guid>, Rc<Guid>)> {
+    pub fn get_edge_connections(&mut self) -> &HashMap<Rc<Guid>, Rc<NodePair>> {
         &self.edge_connections
     }
 
-    pub fn get_degree(&self, node: Rc<Guid>) -> usize {
+    pub fn get_degree_of_node(&self, node: Rc<Guid>) -> usize {
         match self.node_connections.get(&node) {
             Some(conn) => conn.len(),
             None => 0,
         }
     }
 
-    pub fn get_guid(&self) -> Rc<Guid> {
+    pub fn get_graph_guid(&self) -> Rc<Guid> {
         self.guid.clone()
     }
 
@@ -215,135 +249,49 @@ impl Graph {
         self.nodes.insert(guid, node);
     }
 
-    pub fn add_connected_node_guids(&mut self, connection: (Rc<Guid>, Rc<Guid>)) {
-        if let (Some(source_node), Some(target_node)) = (self.get_node(connection.0), self.get_node(connection.1)) {
+    pub fn add_connected_nodes_by_guid(&mut self, connection: Rc<NodePair>) {
+        if let (Some(source_node), Some(target_node)) = (self.get_node(connection.get_left()), self.get_node(connection.get_right())) {
             self.add_connected_nodes((source_node, target_node))
         }
     }
-
-
-    pub fn get_tree_for_node(&self, node_guid: Rc<Guid>, cache: Option<&mut TreeCache>) -> Option<Vec<Rc<Guid>>> {
-        match cache {
-            Some(c) => { self.get_tree_for_node_cached_(&node_guid, c) }
-            None => { self.get_tree_for_node_no_cache_(&node_guid) }
-        }
-    }
-
-    fn get_tree_for_node_no_cache_(&self, node_guid: &Rc<Guid>) -> Option<Vec<Rc<Guid>>> {
-        let mut v = Vec::new();
-        v.push(node_guid.clone());
-        let ret = self.get_tree_for_node_(v, 0);
-        match ret.1 {
-            true => None,
-            false => Some(ret.0),
-        }
-    }
-
-    fn get_tree_for_node_cached_(&self, node_guid: &Rc<Guid>, c: &mut TreeCache) -> Option<Vec<Rc<Guid>>> {
-        let mut pos: usize = 0;
-        let v = c.get_vector(node_guid.clone());
-        for i in 0..v.len() {
-            if let true = Rc::ptr_eq(&node_guid.clone(), &v[i]) {
-                pos = i;
-                break;
-            }
-        }
-
-        let ret = self.get_tree_for_node_(v, pos);
-        match ret.1 {
-            true => None,
-            false => {
-                c.push_vector(ret.0.clone());
-                Some(ret.0)
-            }
-        }
-    }
-
-    pub fn get_ordered_path_for_node(&self, node_guid: Rc<Guid>) -> Option<Vec<Rc<Guid>>> {
-        let mut find = node_guid.clone();
-        if let Some(nodes) = self.get_path_for_node(node_guid.clone()) {
-            for node in nodes {
-                if let true = self.get_degree(node.clone()) == 1 {
-                    find = node;
-                    break;
-                }
-            }
-        }
-        self.get_path_for_node(find)
-    }
-
-    pub fn get_path_for_node(&self, node_guid: Rc<Guid>) -> Option<Vec<Rc<Guid>>> {
-        let mut path = Vec::new();
-        path.push(node_guid.clone());
-
-        let ret = self.get_path_for_node_(path, 0);
-        match ret.1 {
-            true => None, // a cycle was found
-            false => match ret.2 {
-                false => None, // not a path, vertex found with degree > 2
-                true => Some(ret.0), // yay, a path
-            },
-        }
-    }
-
-    fn get_path_for_node_(&self, mut path: Vec<Rc<Guid>>, pos: usize) -> (Vec<Rc<Guid>>, bool, bool) {
-        let mut cycle = false;
-        let mut is_path = true;
-        if let (Some(prev_node), Some(last_node)) =
-        (path.clone().get(pos), path.clone().last()) {
-            if let Some(connections) = self.node_connections.get(last_node) {
-                if let true = connections.len() > 2 { is_path = false; }
-                let my_pos = path.clone().len() - 1;
-                for connection in connections {
-                    if let true = Rc::ptr_eq(&connection.0.clone(), prev_node) { continue; }
-                    if let false = path.clone().contains(&connection.0.clone()) {
-                        path.push(connection.0.clone());
-                        path = self.get_path_for_node_(path, my_pos).0;
-                    } else { cycle = true; }
-                }
-            }
-        }
-        (path, cycle, is_path)
-    }
-
 
     pub fn add_connected_nodes(&mut self, connection: (Rc<Node>, Rc<Node>)) {
         if let true = Rc::ptr_eq(&connection.0, &connection.1) {
             return;
         };
 
-        let left_edge_state: EdgeState = self.get_edge_state(connection.0.get_guid(), connection.1.get_guid());
-        let right_edge_state: EdgeState = self.get_edge_state(connection.1.get_guid(), connection.0.get_guid());
-        let action: ActionState = self.get_action_state(left_edge_state, right_edge_state);
+        let left_edge_state: EdgeState = self.get_edge_state_(connection.0.get_guid(), connection.1.get_guid());
+        let right_edge_state: EdgeState = self.get_edge_state_(connection.1.get_guid(), connection.0.get_guid());
+        let action: ActionState = self.get_action_state_(left_edge_state, right_edge_state);
 
         match action {
             ActionState::CheckEdgeEquality(leg, reg) => match Rc::ptr_eq(&leg, &reg) {
                 true => return,
-                false => self.confirm_matching_edge(leg, reg, connection.0.get_guid(), connection.1.get_guid()),
+                false => self.confirm_matching_edge_(leg, reg, connection.0.get_guid(), connection.1.get_guid()),
             },
-            ActionState::AssociateRight(leg) => self.associate_node(connection.1.get_guid(), leg, connection.0.get_guid()),
-            ActionState::AssociateLeft(reg) => self.associate_node(connection.0.get_guid(), reg, connection.1.get_guid()),
-            ActionState::AddRight(leg) => self.add_associate_node(connection.1.get_guid(), leg, connection.0.get_guid()),
-            ActionState::AddLeft(reg) => self.add_associate_node(connection.0.get_guid(), reg, connection.1.get_guid()),
+            ActionState::AssociateRight(leg) => self.associate_node_(connection.1.get_guid(), leg, connection.0.get_guid()),
+            ActionState::AssociateLeft(reg) => self.associate_node_(connection.0.get_guid(), reg, connection.1.get_guid()),
+            ActionState::AddRight(leg) => self.add_associate_node_(connection.1.get_guid(), leg, connection.0.get_guid()),
+            ActionState::AddLeft(reg) => self.add_associate_node_(connection.0.get_guid(), reg, connection.1.get_guid()),
             ActionState::AssociateBoth => {
-                let new_edge: Rc<Edge> = self.create_edge(connection.0.get_guid(), connection.1.get_guid());
-                self.associate_node(connection.0.get_guid(), new_edge.get_guid(), connection.1.get_guid());
-                self.associate_node(connection.1.get_guid(), new_edge.get_guid(), connection.0.get_guid());
+                let new_edge: Rc<Edge> = self.create_edge_(connection.0.get_guid(), connection.1.get_guid());
+                self.associate_node_(connection.0.get_guid(), new_edge.get_guid(), connection.1.get_guid());
+                self.associate_node_(connection.1.get_guid(), new_edge.get_guid(), connection.0.get_guid());
             }
             ActionState::AddRightAssociateLeft => {
-                let new_edge: Rc<Edge> = self.create_edge(connection.0.get_guid(), connection.1.get_guid());
-                self.associate_node(connection.0.get_guid(), new_edge.get_guid(), connection.1.get_guid());
-                self.add_associate_node(connection.1.get_guid(), new_edge.get_guid(), connection.0.get_guid());
+                let new_edge: Rc<Edge> = self.create_edge_(connection.0.get_guid(), connection.1.get_guid());
+                self.associate_node_(connection.0.get_guid(), new_edge.get_guid(), connection.1.get_guid());
+                self.add_associate_node_(connection.1.get_guid(), new_edge.get_guid(), connection.0.get_guid());
             }
             ActionState::AddLeftAssociateRight => {
-                let new_edge: Rc<Edge> = self.create_edge(connection.0.get_guid(), connection.1.get_guid());
-                self.add_associate_node(connection.0.get_guid(), new_edge.get_guid(), connection.1.get_guid());
-                self.associate_node(connection.1.get_guid(), new_edge.get_guid(), connection.0.get_guid());
+                let new_edge: Rc<Edge> = self.create_edge_(connection.0.get_guid(), connection.1.get_guid());
+                self.add_associate_node_(connection.0.get_guid(), new_edge.get_guid(), connection.1.get_guid());
+                self.associate_node_(connection.1.get_guid(), new_edge.get_guid(), connection.0.get_guid());
             }
             ActionState::AddBoth => {
-                let new_edge: Rc<Edge> = self.create_edge(connection.0.get_guid(), connection.1.get_guid());
-                self.add_associate_node(connection.1.get_guid(), new_edge.get_guid(), connection.0.get_guid());
-                self.add_associate_node(connection.0.get_guid(), new_edge.get_guid(), connection.1.get_guid());
+                let new_edge: Rc<Edge> = self.create_edge_(connection.0.get_guid(), connection.1.get_guid());
+                self.add_associate_node_(connection.1.get_guid(), new_edge.get_guid(), connection.0.get_guid());
+                self.add_associate_node_(connection.0.get_guid(), new_edge.get_guid(), connection.1.get_guid());
             }
         }
     }
@@ -357,8 +305,8 @@ impl Graph {
 
     pub fn remove_edge_connection(&mut self, connection: Rc<Edge>) {
         if let Some(edge) = self.edge_connections.get(&connection.get_guid()) {
-            if let Some(l) = self.nodes.get(&edge.0) {
-                if let Some(r) = self.nodes.get(&edge.1) {
+            if let Some(l) = self.nodes.get(&edge.get_pair().0) {
+                if let Some(r) = self.nodes.get(&edge.get_pair().1) {
                     self.remove_node_connection((l.clone(), r.clone()));
                 }
             }
@@ -380,8 +328,7 @@ impl Graph {
         println!("Original Vector Length: {} items.", h.len());
         for i in { 0..h.len() } {
             for j in { i + 1..h.len() } {
-//for j in { 0..h.len() } {
-                self.add_connected_nodes((Rc::clone(&h[i]), Rc::clone(&h[j])));
+                self.add_connected_nodes((h[i].clone(), h[j].clone()));
             }
         }
         println!("Edges Created: {}.", self.edges.len());
@@ -389,25 +336,6 @@ impl Graph {
 }
 
 impl Graph {
-    fn get_tree_for_node_(&self, mut tree: Vec<Rc<Guid>>, pos: usize) -> (Vec<Rc<Guid>>, bool) {
-        let mut cycle = false;
-        if let (Some(prev_node), Some(last_node)) =
-        (tree.clone().get(pos), tree.clone().last()) {
-            if let Some(connections) = self.node_connections.get(last_node) {
-                let my_pos = tree.clone().len() - 1;
-                for connection in connections {
-                    if let true = Rc::ptr_eq(&connection.0.clone(), prev_node) { continue; }
-                    if let false = tree.clone().contains(&connection.0.clone()) {
-                        tree.push(connection.0.clone());
-                        tree = self.get_tree_for_node_(tree, my_pos).0;
-                    } else { cycle = true; }
-                }
-            }
-        }
-        (tree, cycle)
-    }
-
-
     fn remove_node_connection_(&mut self, connection: &(Rc<Node>, Rc<Node>)) {
         if let Some(map) = self.node_connections.get_mut(&connection.0.get_guid()) {
             if let Some(edge_guid) = map.remove(&connection.1.get_guid()) {
@@ -418,12 +346,12 @@ impl Graph {
         }
     }
 
-    fn add_edge(&mut self, edge: Rc<Edge>) {
+    fn add_edge_(&mut self, edge: Rc<Edge>) {
         let guid: Rc<Guid> = Rc::clone(&edge.get_guid());
         self.edges.insert(guid, edge);
     }
 
-    fn get_edge_state(&self, source_node: Rc<Guid>, target_node: Rc<Guid>) -> EdgeState {
+    fn get_edge_state_(&self, source_node: Rc<Guid>, target_node: Rc<Guid>) -> EdgeState {
         match self.node_connections.get(&source_node) {
             Some(assoc_hm) => match assoc_hm.get(&target_node) {
                 Some(assoc_edge) => EdgeState::Associated(Rc::clone(assoc_edge)),
@@ -433,7 +361,7 @@ impl Graph {
         }
     }
 
-    fn get_action_state(&self, left_edge_state: EdgeState, right_edge_state: EdgeState) -> ActionState {
+    fn get_action_state_(&self, left_edge_state: EdgeState, right_edge_state: EdgeState) -> ActionState {
         match (left_edge_state, right_edge_state) {
             (EdgeState::Associated(leg), EdgeState::NotAssociated) => { ActionState::AssociateRight(leg) }
             (EdgeState::Associated(leg), EdgeState::DoesNotExist) => { ActionState::AddRight(leg) }
@@ -447,7 +375,7 @@ impl Graph {
         }
     }
 
-    fn confirm_matching_edge(&mut self, left_edge_guid: Rc<Guid>, right_edge_guid: Rc<Guid>, source_node: Rc<Guid>, target_node: Rc<Guid>) {
+    fn confirm_matching_edge_(&mut self, left_edge_guid: Rc<Guid>, right_edge_guid: Rc<Guid>, source_node: Rc<Guid>, target_node: Rc<Guid>) {
         match self.edges.remove(&right_edge_guid) { _ => (), }
         match self.edge_connections.remove(&right_edge_guid) { _ => (), }
         if let Some(x) = self.node_connections.get_mut(&target_node) {
@@ -455,7 +383,7 @@ impl Graph {
         }
     }
 
-    fn create_edge(&mut self, source_node: Rc<Guid>, target_node: Rc<Guid>) -> Rc<Edge> {
+    fn create_edge_(&mut self, source_node: Rc<Guid>, target_node: Rc<Guid>) -> Rc<Edge> {
         let mut ln: &uom::PositionKind = &uom::PositionKind::Unknown;
         if let Some(node) = &self.nodes.get(&source_node) { ln = node.get_position() };
 
@@ -469,19 +397,19 @@ impl Graph {
         };
 
         let new_edge: Rc<Edge> = Rc::new(Edge::new(edge_distance));
-        self.add_edge(Rc::clone(&new_edge));
+        self.add_edge_(Rc::clone(&new_edge));
         self.edge_connections.insert(
             new_edge.get_guid(),
-            (source_node, target_node),
+            Rc::new(NodePair::new((source_node, target_node))),
         );
         new_edge.clone()
     }
 
-    fn associate_node(&mut self, source_node: Rc<Guid>, edge: Rc<Guid>, target_node: Rc<Guid>) {
+    fn associate_node_(&mut self, source_node: Rc<Guid>, edge: Rc<Guid>, target_node: Rc<Guid>) {
         if let Some(map) = self.node_connections.get_mut(&source_node) { map.insert(target_node, edge); }
     }
 
-    fn add_associate_node(&mut self, source_node: Rc<Guid>, edge: Rc<Guid>, target_node: Rc<Guid>) {
+    fn add_associate_node_(&mut self, source_node: Rc<Guid>, edge: Rc<Guid>, target_node: Rc<Guid>) {
         let mut r: HashMap<Rc<Guid>, Rc<Guid>> = HashMap::new();
         r.insert(target_node, edge);
         self.node_connections.insert(source_node, r);

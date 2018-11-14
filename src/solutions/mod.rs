@@ -62,8 +62,8 @@ impl Solution {
         }
     }
 
-    fn solve_(&mut self, problem: &ProblemKind, f: fn(&mut Solution, &ProblemKind)) {
-        f(self, problem);
+    fn solve_(&mut self, problem: &ProblemKind, field: fn(&mut Solution, &ProblemKind)) {
+        field(self, problem);
     }
 
     pub fn get_graph(&self) -> &Graph {

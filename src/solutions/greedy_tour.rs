@@ -3,6 +3,7 @@ use crate::metrics::uom::DistanceKind;
 use crate::metrics::uom::Si;
 use std::cmp::Ordering;
 use std::rc::Rc;
+use crate::graph_elements::node_pair::NodePair;
 
 
 pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKind) {
@@ -18,7 +19,7 @@ pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKin
                 if let Some(edge_connection) = re_hash_connections.get(edge.0) {
                     if let Some(distance_kind) = edge.1.get_distance() {
                         if let DistanceKind::Meters(distance) = distance_kind.to_si() {
-                            let val = (edge_connection.0.clone(), edge.0.clone(), edge_connection.1.clone(), distance);
+                            let val = (edge_connection.get_pair().0.clone(), edge.0.clone(), edge_connection.get_pair().1.clone(), distance);
                             edge_distances.push(val);
                         } else { return; } // SI unit is not meters for some reason.
                     } else { return; } // Distance must be set for edge or this doesn't work
@@ -34,21 +35,21 @@ pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKin
             my_graph.remove_all_edges();
 
             for edge_distance in edge_distances {
-                let i = my_graph.get_degree(edge_distance.0.clone()) as u32;
-                let j = my_graph.get_degree(edge_distance.2.clone()) as u32;
+                let i = my_graph.get_degree_of_node(edge_distance.0.clone()) as u32;
+                let j = my_graph.get_degree_of_node(edge_distance.2.clone()) as u32;
 
                 let zero_test = i == 0 || j == 0;
                 let two_test = i < 2 && j < 2;
                 let add_test = zero_test && two_test;
                 if let true = add_test {
-                    my_graph.add_connected_node_guids((edge_distance.0.clone(), edge_distance.2.clone()));
+                    my_graph.add_connected_nodes_by_guid(Rc::new(NodePair::new((edge_distance.0.clone(), edge_distance.2.clone()))));
                 }
 
                 let path_test = i == 1 && j == 1;
                 if let true = path_test {
                     if let Some(p) = my_graph.get_path_for_node(edge_distance.0.clone()) {
                         if let false = p.contains(&edge_distance.2.clone()) {
-                            my_graph.add_connected_node_guids((edge_distance.0.clone(), edge_distance.2.clone()));
+                            my_graph.add_connected_nodes_by_guid(Rc::new(NodePair::new((edge_distance.0.clone(), edge_distance.2.clone()))));
                         }
                     }
                 }

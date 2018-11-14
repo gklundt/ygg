@@ -1,10 +1,11 @@
 use std::f64::consts;
+use std::fmt;
 
 const METER_PER_FOOT: f64 = 0.3048;
 const METER_PER_MILE: f64 = 1609.34;
 const METER_PER_INCH: f64 = 0.0254;
 const RAD_PER_DEG: f64 = consts::PI / 180.0;
-const METER_PER_KILOMETER:f64 = 1000.0;
+const METER_PER_KILOMETER: f64 = 1000.0;
 pub const EQUATORIAL_RADIUS_OF_EARTH: DistanceKind = DistanceKind::Kilometers(6378.0);
 pub const POLAR_RADIUS_OF_EARTH: DistanceKind = DistanceKind::Kilometers(6357.0);
 
@@ -66,6 +67,19 @@ impl Si for DistanceKind {
             DistanceKind::Meters(m) => DistanceKind::Meters(*m),
             DistanceKind::Inches(i) => DistanceKind::Meters(i * METER_PER_INCH),
             _ => DistanceKind::Unknown,
+        }
+    }
+}
+
+impl fmt::Display for DistanceKind {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match &self {
+            DistanceKind::Feet(ft) => { write!(f, "( Feet: {} )", ft) }
+            DistanceKind::Miles(mi) => { write!(f, "( Miles: {} )", mi) }
+            DistanceKind::Kilometers(km) => { write!(f, "( Kilometers: {} )", km) }
+            DistanceKind::Meters(m) => { write!(f, "( Meters: {} )", m) }
+            DistanceKind::Inches(i) => { write!(f, "( Inches: {} )", i) }
+            DistanceKind::Unknown => { write!(f, "( Unknown") }
         }
     }
 }
@@ -145,6 +159,17 @@ impl AngularKind {
     }
 }
 
+
+impl fmt::Display for AngularKind {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match &self {
+            AngularKind::Degrees(deg) => { write!(f, "( Degrees: {} )", deg) }
+            AngularKind::Radians(rad) => { write!(f, "( Radians: {} )", rad) }
+        }
+    }
+}
+
+
 #[derive(Debug)]
 pub enum TemperatureKind {
     Celsius(f64),
@@ -176,6 +201,20 @@ pub enum PositionKind {
     Polar { radial: DistanceKind, theta: AngularKind },
     Unknown,
 }
+
+impl fmt::Display for PositionKind {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match &self {
+            PositionKind::TwoDimensionEuclidean { x, y } => { write!(f, "( x: {}, y: {} )", x, y) }
+            PositionKind::ThreeDimensionEuclidean { x, y, z } => { write!(f, "( x: {}, y: {}, z: {} )", x, y, z) }
+            PositionKind::TwoDimensionGeo { lat, lng } => { write!(f, "( lat: {}, long: {} )", lat, lng) }
+            PositionKind::Polar { radial, theta } => { write!(f, "( radius: {}, theta: {} )", radial, theta) }
+            PositionKind::Spherical { radial, polar, azimuth } => { write!(f, "( radial: {}, polar: {}, azimuth: {} )", radial, polar, azimuth) }
+            PositionKind::Unknown => { write!(f, "( Unknown Position )") }
+        }
+    }
+}
+
 
 impl Si for PositionKind {
     fn to_si(&self) -> Self {
