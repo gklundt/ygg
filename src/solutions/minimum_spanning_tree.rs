@@ -38,20 +38,34 @@ pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKin
             my_graph.remove_all_edges();
 
 
-            let node_count = my_graph.get_nodes().len();
+            let node_count = my_graph.get_nodes().len() as i32;
+            let mut edge_count = -1;
             let mut tree_cache = TreeCache::new();
             for edge_distance in edge_distances {
+                if let true = edge_count == node_count { break; }
+
                 let node_pair = Rc::new(NodePair::new((edge_distance.0, edge_distance.2)));
-                if let false = tree_cache.check_for_cycle(node_pair.clone()) {
-                    println!("Adding {} -> {}", node_pair.get_left().clone(), node_pair.get_right().clone());
+
+                let i = my_graph.get_degree_of_node(node_pair.get_left()) as u32;
+                let j = my_graph.get_degree_of_node(node_pair.get_right()) as u32;
+
+                let zero_test = i == 0 || j == 0;
+                let two_test = i < 2 && j < 2;
+                let add_test = zero_test && two_test;
+                if let true = add_test {
                     my_graph.add_connected_nodes_by_guid(node_pair.clone());
                     tree_cache.push_edge(node_pair.clone());
-                } else {
-                    println!("Declining {} -> {}", node_pair.get_left().clone(), node_pair.get_right().clone());
+                    edge_count += 1;
+                    continue;
                 }
-                if let true = tree_cache.node_pairs().len() - 1 == node_count { break; }
-            }
 
+
+                if let false = tree_cache.check_for_cycle(node_pair.clone()) {
+                    my_graph.add_connected_nodes_by_guid(node_pair.clone());
+                    tree_cache.push_edge(node_pair.clone());
+                    edge_count += 1;
+                }
+            }
             solution.add_sub_graph(Rc::new(my_graph));
         } // find the right sub-graph from the solution
     } // make sure we're solving the right problem

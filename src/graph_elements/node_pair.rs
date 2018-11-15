@@ -3,15 +3,21 @@ use std::rc::Rc;
 
 #[derive(Debug)]
 pub struct NodePair { left: Rc<Guid>, right: Rc<Guid> }
+
 impl PartialEq for NodePair {
     fn eq(&self, other: &NodePair) -> bool {
-        let l_l = Rc::ptr_eq(&self.left, &other.get_left());
-        let r_r = Rc::ptr_eq(&self.right, &other.get_right());
-        let l_r = Rc::ptr_eq(&self.left, &other.get_right());
-        let r_l = Rc::ptr_eq(&self.right, &other.get_left());
-        (l_l && r_r) || (l_r && r_l)
+        match (Rc::ptr_eq(&self.left, &other.get_left()),
+               Rc::ptr_eq(&self.right, &other.get_right()),
+               Rc::ptr_eq(&self.left, &other.get_right()),
+               Rc::ptr_eq(&self.right, &other.get_left())
+        ) {
+            (true, true, _, _) => true,
+            (_, _, true, true) => true,
+            (_, _, _, _) => false,
+        }
     }
 }
+
 impl NodePair {
     pub fn new(nodes: (Rc<Guid>, Rc<Guid>)) -> Self {
         NodePair {
@@ -33,9 +39,8 @@ impl NodePair {
     }
 
     pub fn contains(&self, node_guid: Rc<Guid>) -> bool {
-        let l = Rc::ptr_eq(&self.left, &node_guid);
-        let r = Rc::ptr_eq(&self.right, &node_guid);
-        l || r
+        Rc::ptr_eq(&self.left, &node_guid) ||
+            Rc::ptr_eq(&self.right, &node_guid)
     }
 
     pub fn get_peer(&self, node_guid: Rc<Guid>) -> Option<Rc<Guid>> {
@@ -51,7 +56,6 @@ impl NodePair {
 
 #[cfg(test)]
 mod tests {
-    use crate::graph_elements::graph::NodePair;
     use crate::graph_elements::node::Node;
     use crate::graph_elements::node_pair::NodePair;
 

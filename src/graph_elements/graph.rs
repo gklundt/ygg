@@ -8,6 +8,8 @@ use crate::graph_elements::node_pair::NodePair;
 use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
+use crate::metrics::uom::DistanceKind;
+use crate::metrics::uom::Si;
 
 
 #[derive(Debug)]
@@ -49,23 +51,29 @@ enum ActionState {
 impl Graph {
     pub fn get_tree_for_node(&self, node_guid: Rc<Guid>) -> Option<Vec<Rc<Guid>>> {
         let mut params = (Vec::new(), Vec::new(), false);
-        println!("Sending in {}", self.nodes.get(&node_guid.clone()).unwrap().get_name());
+        params.0.push(node_guid.clone());
         params = self.get_tree_for_node_(node_guid, params);
+
         match params.2 {
             true => None,
             false => Some(params.0.clone())
         }
     }
 
+
     fn get_tree_for_node_(&self, current_node: Rc<Guid>, mut params: (Vec<Rc<Guid>>, Vec<Rc<NodePair>>, bool)) -> (Vec<Rc<Guid>>, Vec<Rc<NodePair>>, bool) {
-        params.0.push(current_node.clone());
-        for edge_connection in &self.edge_connections {
-            if let true = params.1.clone().contains(edge_connection.1) { continue; }
-            if let true = edge_connection.1.contains(current_node.clone()) {
-                if let Some(peer) = edge_connection.1.get_peer(current_node.clone()) {
-                    params.1.push(edge_connection.1.clone());
-                    params = self.get_tree_for_node_(peer, params);
+        if let Some(map) = self.node_connections.get(&current_node.clone()) {
+            for edge_connection in map {
+                let pair = Rc::new(NodePair::new((current_node.clone(), edge_connection.0.clone())));
+                if let true = params.1.clone().contains(&pair) {
+                    continue;
                 }
+                if let true = params.0.contains(&edge_connection.0.clone()) {
+                    continue;
+                }
+                params.0.push(edge_connection.0.clone().clone());
+                params.1.push(pair);
+                params = self.get_tree_for_node_(edge_connection.0.clone(), params);
             }
         }
         params
@@ -231,6 +239,16 @@ impl Graph {
 
     pub fn get_edge_connections(&mut self) -> &HashMap<Rc<Guid>, Rc<NodePair>> {
         &self.edge_connections
+    }
+
+    pub fn get_edge_distance(&self) -> DistanceKind {
+        DistanceKind::Meters(self.edges.iter().fold(0.0, | acc, a|{let mut m = 0.0;
+            if let Some(distance) = a.1.get_distance() {
+                if let DistanceKind::Meters(meters) = distance.to_si() {
+                    m = meters;
+                }
+            };
+            acc + m}))
     }
 
     pub fn get_degree_of_node(&self, node: Rc<Guid>) -> usize {

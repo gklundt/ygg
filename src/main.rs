@@ -1,17 +1,14 @@
 extern crate ygg;
 
 
-
-
-pub fn main(){
+pub fn main() {
     goofing::main_fruff();
-
-
 }
 
 
 pub mod goofing {
     extern crate ygg;
+
     //use rand::{thread_rng, Rng};
     use ygg::graph_elements::graph::Graph;
     use ygg::graph_elements::node::Node;
@@ -21,6 +18,7 @@ pub mod goofing {
     use ygg::solutions::Solution;
     use rand::thread_rng;
     use rand::Rng;
+    use ygg::metrics::uom::Si;
 
 
     pub fn main_fruff() {
@@ -55,23 +53,23 @@ pub mod goofing {
 
 
 // Test for Shortest Tour Greedy
-    for i in 0..100 {
-        let name = format!("Node: {}", i);
+        for i in 0..350 {
+            let name = format!("Node: {}", i);
 
-        primer.add_node(
-            Node::new(
-                Some(
-                    PositionKind::TwoDimensionEuclidean {
-                        x: DistanceKind::Meters(thread_rng().gen_range(1.0, 100.0) as f64),
-                        y: DistanceKind::Meters(thread_rng().gen_range(1.0, 100.0) as f64),
-                        //y: DistanceKind::Meters(0.0),
-                    }),
-                Some(name),
-            )
-        );
-    }
+            primer.add_node(
+                Node::new(
+                    Some(
+                        PositionKind::TwoDimensionEuclidean {
+                            x: DistanceKind::Meters(thread_rng().gen_range(1.0, 100.0) as f64),
+                            y: DistanceKind::Meters(thread_rng().gen_range(1.0, 100.0) as f64),
+                            //y: DistanceKind::Meters(0.0),
+                        }),
+                    Some(name),
+                )
+            );
+        }
 
-
+//
 //        primer.add_node(Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(85.21773885774718), y: DistanceKind::Meters(62.173474906841335) }), Some("Node: 0".to_string())));
 //        primer.add_node(Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(85.3180434700734), y: DistanceKind::Meters(46.95934591522585) }), Some("Node: 1".to_string())));
 //        primer.add_node(Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(19.26007772031716), y: DistanceKind::Meters(98.86595581386) }), Some("Node: 2".to_string())));
@@ -133,23 +131,26 @@ pub mod goofing {
         next_solve.solve(&next_pk);
 
         for g in next_solve.get_graph().get_sub_graphs().clone() {
-            println!("MST Graph: {}", g.1);
-            if let Some(node) = g.1.get_nodes().iter().next() {
-                if let Some(path) = g.1.get_tree_for_node(node.0.clone()) {
-                    for p in path {
-                        let the_node = g.1.get_node(p.clone()).unwrap();
-                        let the_degree = g.1.get_degree_of_node(the_node.clone().get_guid());
-                        println!("{}({}) - {}", p, the_degree, the_node);
-                    }
-                }
-            }
+            println!("{}", g.1.get_edge_distance().to_feet());
+
+            // println!("MST Graph: {}", g.1);
+//            if let Some(node) = g.1.get_nodes().iter().next() {
+//                if let Some(path) = g.1.get_tree_for_node(node.0.clone()) {
+//                    path.iter().fold()
+//                    for p in path {
+//                        let the_node = g.1.get_node(p.clone()).unwrap();
+//                        let the_degree = g.1.get_degree_of_node(the_node.clone().get_guid());
+//                        println!("{}({}) - {}", p, the_degree, the_node);
+//                    }
+//                }
+//            }
         }
     }
 }
 
 mod distance_tests {
     use ygg::metrics::uom;
-//    use ygg::metrics::uom::Si;
+    //    use ygg::metrics::uom::Si;
     use ygg::metrics::formulas;
 
     fn main_dorngus() {
