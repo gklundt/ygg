@@ -52,8 +52,7 @@ pub mod goofing {
 //    } else { println!("Not a Path"); }
 
 
-// Test for Shortest Tour Greedy
-        for i in 0..350 {
+        for i in 0..10 {
             let name = format!("Node: {}", i);
 
             primer.add_node(
@@ -83,6 +82,8 @@ pub mod goofing {
 
 
         primer.connect_all_nodes();
+        //println!("{}", primer);
+        println!("{}", primer.get_edge_distance());
 
 //    let n1: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(80.0), y: DistanceKind::Meters(90.0) }), Some("A".to_string()));
 //    let n2: Rc<Node> = Node::new(Some(PositionKind::TwoDimensionEuclidean { x: DistanceKind::Meters(60.0), y: DistanceKind::Meters(55.0) }), Some("B".to_string()));
@@ -102,41 +103,38 @@ pub mod goofing {
 
 //    g.connect_all_nodes();
 
-        //println!("{}", g);
 
+        let g = primer.replicate_all();
 
-//    let g = primer.replicate_all();
+        let pk = ProblemKind::GreedyTour { graph_guid: g.get_graph_guid() };
+        let mut solve = Solution::new(g);
+        solve.solve(&pk);
 
-//    let pk = ProblemKind::GreedyTour { graph_guid: g.get_guid() };
-//    let mut solve = Solution::new(g);
-//    solve.solve(&pk);
+        for g in solve.get_graph().get_sub_graphs().clone() {
+            println!("{}", g.1.get_edge_distance());
+            println!("Greedy Tour Graph: {}", g.1);
+            if let Some(node) = g.1.get_nodes().iter().next() {
+                if let Some(path) = g.1.get_ordered_path_for_node(node.0.clone()) {
+                    for p in path {
+                        let the_node = g.1.get_node(p.clone()).unwrap();
+                        let the_degree = g.1.get_degree_of_node(the_node.clone().get_guid());
+                        println!("{}({}) - {}", p, the_degree, the_node);
+                    }
+                }
+            }
+        }
+
+//        let next = primer.replicate_all();
+//        let next_pk = ProblemKind::MinimumSpanningTree { graph_guid: next.get_graph_guid() };
+//        let mut next_solve = Solution::new(next);
+//        next_solve.solve(&next_pk);
 //
-//    for g in solve.get_graph().get_sub_graphs().clone() {
+//        for g in next_solve.get_graph().get_sub_graphs().clone() {
+//            println!("{}", g.1.get_edge_distance());
 //
-//        println!("Greedy Tour Graph: {}", g.1);
-//        if let Some(node) = g.1.get_nodes().iter().next() {
-//            if let Some(path) = g.1.get_ordered_path_for_node(node.0.clone()) {
-//                for p in path {
-//                    let the_node = g.1.get_node(p.clone()).unwrap();
-//                    let the_degree = g.1.get_degree(the_node.clone().get_guid());
-//                    println!("{}({}) - {}", p, the_degree, the_node);
-//                }
-//            }
-//        }
-//    }
-
-        let next = primer.replicate_all();
-        let next_pk = ProblemKind::MinimumSpanningTree { graph_guid: next.get_graph_guid() };
-        let mut next_solve = Solution::new(next);
-        next_solve.solve(&next_pk);
-
-        for g in next_solve.get_graph().get_sub_graphs().clone() {
-            println!("{}", g.1.get_edge_distance().to_feet());
-
-            // println!("MST Graph: {}", g.1);
+//            println!("MST Graph: {}", g.1);
 //            if let Some(node) = g.1.get_nodes().iter().next() {
 //                if let Some(path) = g.1.get_tree_for_node(node.0.clone()) {
-//                    path.iter().fold()
 //                    for p in path {
 //                        let the_node = g.1.get_node(p.clone()).unwrap();
 //                        let the_degree = g.1.get_degree_of_node(the_node.clone().get_guid());
@@ -144,7 +142,7 @@ pub mod goofing {
 //                    }
 //                }
 //            }
-        }
+//        }
     }
 }
 

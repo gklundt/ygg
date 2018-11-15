@@ -7,9 +7,10 @@ use crate::graph_elements::cache::TreeCache;
 use crate::graph_elements::node_pair::NodePair;
 
 pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKind) {
-    if let solutions::ProblemKind::MinimumSpanningTree { graph_guid: g } = problem {
-        if let Some(og) = solution.get_graph().get_graph(g.clone()) {
+    if let solutions::ProblemKind::MinimumSpanningTree { graph_guid: graph_guid } = problem {
+        if let Some(og) = solution.get_graph().get_graph(graph_guid.clone()) {
             let mut edge_distances = Vec::new();
+
 
             let mut my_graph = og.replicate_all();
             let re_hash_edges = my_graph.get_edges().clone();
@@ -33,7 +34,6 @@ pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKin
                         None => { Ordering::Less }
                     }
                 });
-
 
             my_graph.remove_all_edges();
 

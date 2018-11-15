@@ -7,6 +7,6 @@ pub mod graph_elements;
 pub mod uuid;
 pub mod metrics;
 pub mod solutions;
-
+pub mod heuristics;
 #[cfg(test)]
 mod tests;

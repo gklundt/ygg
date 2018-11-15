@@ -1,0 +1,4 @@
+enum ResourceKind{
+    Driver,
+    Vehicle,
+}
