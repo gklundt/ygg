@@ -58,16 +58,16 @@ impl TreeCache {
         let mut params = (Vec::new(), Vec::new(), false);
         match self.node_pairs.last() {
             None => false,
-            Some(first) => {
-                let mut candidate_node = first.get_left();
+            Some(last) => {
+                let mut candidate_node = last.get_left();
 
                 // Use best existing path if one exists
                 // find all paths that have the nodes I care about
                 let mut candidate_paths = Vec::new();
                 let mut index: usize = 0;
                 for path in &self.paths {
-                    if let true = path.0.contains(&first.get_left()) { candidate_paths.push((index, path.0.len(), first.get_left())) }
-                    if let true = path.0.contains(&first.get_right()) { candidate_paths.push((index, path.0.len(), first.get_right())) }
+                    if let true = path.0.contains(&last.get_left()) { candidate_paths.push((index, path.0.len(), last.get_left())) }
+                    if let true = path.0.contains(&last.get_right()) { candidate_paths.push((index, path.0.len(), last.get_right())) }
                     index += 1;
                 }
 
@@ -97,6 +97,8 @@ impl TreeCache {
     fn contains_cycle_(&self, current_node: Rc<Guid>, mut params: (Vec<Rc<Guid>>, Vec<Rc<NodePair>>, bool)) -> (Vec<Rc<Guid>>, Vec<Rc<NodePair>>, bool) {
         for node_pair in self.node_pairs.clone() { // for each pair in the cache
             if let true = node_pair.contains(current_node.clone()) { // if the pair contains the current node
+
+
                 if let true = params.1.clone().contains(&node_pair) { continue; } // if the used paths list contains the existing path, skip
                 if let Some(peer) = node_pair.get_peer(current_node.clone()) { // get the peer of the current node
                     if let true = params.0.clone().contains(&peer.clone()) { // if the peer has been visited, leave
@@ -108,6 +110,9 @@ impl TreeCache {
                         params = self.contains_cycle_(peer.clone(), params);
                     }
                 }
+
+
+
             }
         }
         params

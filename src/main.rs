@@ -2,11 +2,102 @@ extern crate ygg;
 
 
 pub fn main() {
-    goofing::main_fruff();
+    heuristics_sandbox::main();
 }
 
+mod heuristics_sandbox {
+    use std::ops;
+    use std::cmp;
 
-pub mod goofing {
+    pub enum ComparisonOperatorKind {
+        Eq,
+        Ne,
+        Gt,
+        Lt,
+        GtEq,
+        LtEq,
+    }
+
+    pub enum BoolOperatorKind {
+        And,
+        Or,
+        Not,
+        Xor,
+    }
+
+    /// should work like a rpn stack for boolean expressions
+    /// fact (entry of first fact)
+    /// fact (entry of second fact)
+    /// compare_op (comparison operator of previous two facts)
+    /// fact (enters fact)
+    /// fact (enters fact)
+    /// compare_op (applies to previous facts)
+    /// bool_op (applies to previous results in the stack)
+    ///
+    ///
+    /// 2       =>  False   =>  False
+    /// 4           True
+    /// GtEq        And
+    /// pot-ay-to
+    /// pot-ah-to
+    /// Eq
+    /// And
+    ///
+    /// Constraint Stack: [ 2 , 4 , GtEq , pot-ay-to , pot-ah-to , Eq , And ]
+    /// Produces Intermediate Steps: [ False , True , And ]
+    /// Recurse to final implication: [ False ]
+    pub struct Constraint {}
+
+    impl Constraint {
+        pub fn evaluate_fact<T>(&self, lhs: T, rhs: T, op: ComparisonOperatorKind) -> bool
+            where T: Eq {}
+
+        pub fn evaluate_implication<T>(&self, lhs: T, rhs: T, op: BoolOperatorKind) -> bool
+            where T: bool {}
+    }
+
+
+    pub fn main() {
+        /*
+        Facts must support comparison operations.
+        A constraint is a composition of expressions that evaluate to a bool.
+
+
+        fact op fact => implication
+        implication op implication => implication
+
+
+        example constraint: a stop can only receive a shipment between the hours of 2:00 and 4:00 pm
+
+
+        min_time (fact) <= calculated_arrival_time (fact) => implication_one
+        calculated_arrival_time (fact) <= max_time (fact) => implication_two
+        implication_one && implication_two => implication_three
+
+
+
+
+
+
+
+
+
+        */
+
+        let fact1 = 0.34f64;
+
+
+        let tst = Constraint { eval: question };
+        let response = tst.evaluate(4.5, 3.3);
+        println!("does this even work? {:?}", response)
+    }
+
+    fn question() -> bool {
+        true
+    }
+}
+
+mod goofing {
     extern crate ygg;
 
     //use rand::{thread_rng, Rng};
@@ -52,7 +143,7 @@ pub mod goofing {
 //    } else { println!("Not a Path"); }
 
 
-        for i in 0..10 {
+        for i in 0..5 {
             let name = format!("Node: {}", i);
 
             primer.add_node(
@@ -124,25 +215,25 @@ pub mod goofing {
             }
         }
 
-//        let next = primer.replicate_all();
-//        let next_pk = ProblemKind::MinimumSpanningTree { graph_guid: next.get_graph_guid() };
-//        let mut next_solve = Solution::new(next);
-//        next_solve.solve(&next_pk);
-//
-//        for g in next_solve.get_graph().get_sub_graphs().clone() {
-//            println!("{}", g.1.get_edge_distance());
-//
-//            println!("MST Graph: {}", g.1);
-//            if let Some(node) = g.1.get_nodes().iter().next() {
-//                if let Some(path) = g.1.get_tree_for_node(node.0.clone()) {
-//                    for p in path {
-//                        let the_node = g.1.get_node(p.clone()).unwrap();
-//                        let the_degree = g.1.get_degree_of_node(the_node.clone().get_guid());
-//                        println!("{}({}) - {}", p, the_degree, the_node);
-//                    }
-//                }
-//            }
-//        }
+        let next = primer.replicate_all();
+        let next_pk = ProblemKind::MinimumSpanningTree { graph_guid: next.get_graph_guid() };
+        let mut next_solve = Solution::new(next);
+        next_solve.solve(&next_pk);
+
+        for g in next_solve.get_graph().get_sub_graphs().clone() {
+            println!("{}", g.1.get_edge_distance());
+
+            println!("MST Graph: {}", g.1);
+            if let Some(node) = g.1.get_nodes().iter().next() {
+                if let Some(path) = g.1.get_tree_for_node(node.0.clone()) {
+                    for p in path {
+                        let the_node = g.1.get_node(p.clone()).unwrap();
+                        let the_degree = g.1.get_degree_of_node(the_node.clone().get_guid());
+                        println!("{}({}) - {}", p, the_degree, the_node);
+                    }
+                }
+            }
+        }
     }
 }
 

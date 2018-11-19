@@ -120,7 +120,7 @@ pub enum TimeKind {
 }
 
 #[derive(Debug)]
-pub enum SpeedKind {
+pub enum VelocityKind {
     MilesPerHour(f64),
     KilometersPerHour(f64),
     FeetPerSecond(f64),

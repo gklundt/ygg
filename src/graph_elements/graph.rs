@@ -11,7 +11,6 @@ use std::rc::Rc;
 use crate::metrics::uom::DistanceKind;
 use crate::metrics::uom::Si;
 
-
 #[derive(Debug)]
 pub struct Graph {
     guid: Rc<Guid>,
@@ -25,7 +24,6 @@ pub struct Graph {
     named_graphs: HashMap<Rc<String>, Rc<Guid>>,
     named_nodes: HashMap<Rc<String>, Rc<Guid>>,
 }
-
 
 #[derive(Debug)]
 enum EdgeState {
@@ -46,7 +44,6 @@ enum ActionState {
     AddLeftAssociateRight,
     AddBoth,
 }
-
 
 impl Graph {
     pub fn get_tree_for_node(&self, node_guid: Rc<Guid>) -> Option<Vec<Rc<Guid>>> {
@@ -79,7 +76,6 @@ impl Graph {
         params
     }
 }
-
 
 impl Graph {
     pub fn get_ordered_path_for_node(&self, node_guid: Rc<Guid>) -> Option<Vec<Rc<Guid>>> {

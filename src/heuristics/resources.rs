@@ -1,4 +1,4 @@
-enum ResourceKind{
+pub enum ResourceKind{
     Driver,
     Vehicle,
 }
