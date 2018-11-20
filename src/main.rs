@@ -1,102 +1,54 @@
 extern crate ygg;
 
-
 pub fn main() {
     heuristics_sandbox::main();
 }
 
 mod heuristics_sandbox {
-    use std::ops;
-    use std::cmp;
-
-    pub enum ComparisonOperatorKind {
-        Eq,
-        Ne,
-        Gt,
-        Lt,
-        GtEq,
-        LtEq,
-    }
-
-    pub enum BoolOperatorKind {
-        And,
-        Or,
-        Not,
-        Xor,
-    }
-
-    /// should work like a rpn stack for boolean expressions
-    /// fact (entry of first fact)
-    /// fact (entry of second fact)
-    /// compare_op (comparison operator of previous two facts)
-    /// fact (enters fact)
-    /// fact (enters fact)
-    /// compare_op (applies to previous facts)
-    /// bool_op (applies to previous results in the stack)
-    ///
-    ///
-    /// 2       =>  False   =>  False
-    /// 4           True
-    /// GtEq        And
-    /// pot-ay-to
-    /// pot-ah-to
-    /// Eq
-    /// And
-    ///
-    /// Constraint Stack: [ 2 , 4 , GtEq , pot-ay-to , pot-ah-to , Eq , And ]
-    /// Produces Intermediate Steps: [ False , True , And ]
-    /// Recurse to final implication: [ False ]
-    pub struct Constraint {}
-
-    impl Constraint {
-        pub fn evaluate_fact<T>(&self, lhs: T, rhs: T, op: ComparisonOperatorKind) -> bool
-            where T: Eq {}
-
-        pub fn evaluate_implication<T>(&self, lhs: T, rhs: T, op: BoolOperatorKind) -> bool
-            where T: bool {}
-    }
-
+    use ygg::heuristics::constraints::Constraint;
+    use ygg::heuristics::constraints::ConstraintOperations;
+    use ygg::heuristics::constraints::ComparisonOperatorKind;
+    use ygg::heuristics::constraints::BoolOperatorKind;
 
     pub fn main() {
-        /*
-        Facts must support comparison operations.
-        A constraint is a composition of expressions that evaluate to a bool.
 
+        let early_time = 1.0;
+        let late_time = 10.0;
+        let mut c = Constraint::new("must_be_on_time".to_string());
 
-        fact op fact => implication
-        implication op implication => implication
+        let calculated_time = 5.0;
 
+        c.push_const("early_time".to_string(), early_time);
+        c.push_var("calculated_time".to_string(), calculated_time);
+        c.push_compare_op(ComparisonOperatorKind::Lt);
+        c.push_const("late_time".to_string(), late_time);
+        c.push_var("calculated_time".to_string(), calculated_time);
+        c.push_compare_op(ComparisonOperatorKind::Gt);
+        c.push_bool_op(BoolOperatorKind::And);
+        let is_on_time = c.evaluate();
+        println!("On time: {:?}", is_on_time);
 
-        example constraint: a stop can only receive a shipment between the hours of 2:00 and 4:00 pm
+        let calculated_time = 13.0;
+        c.mut_var("calculated_time".to_string(), calculated_time);
+        let is_on_time = c.evaluate();
+        println!("On time: {:?}", is_on_time);
 
+        let calculated_time = 1.01;
+        c.mut_var("calculated_time".to_string(), calculated_time);
+        let is_on_time = c.evaluate();
+        println!("On time: {:?}", is_on_time);
 
-        min_time (fact) <= calculated_arrival_time (fact) => implication_one
-        calculated_arrival_time (fact) <= max_time (fact) => implication_two
-        implication_one && implication_two => implication_three
-
-
-
-
-
-
-
-
-
-        */
-
-        let fact1 = 0.34f64;
-
-
-        let tst = Constraint { eval: question };
-        let response = tst.evaluate(4.5, 3.3);
-        println!("does this even work? {:?}", response)
     }
 
-    fn question() -> bool {
-        true
+    #[cfg(test)]
+    mod tests{
+        #[test]
+        pub fn test_me(){
+            assert_eq!(1,1)
+        }
     }
 }
-
+/*
 mod goofing {
     extern crate ygg;
 
@@ -236,7 +188,8 @@ mod goofing {
         }
     }
 }
-
+*/
+/*
 mod distance_tests {
     use ygg::metrics::uom;
     //    use ygg::metrics::uom::Si;
@@ -263,7 +216,8 @@ mod distance_tests {
         println!("{:?} to {:?} is {:?}", a, b, d);
     }
 }
-
+*/
+/*
 mod some_other_test {
     use std::env;
     use std::io;
@@ -331,4 +285,5 @@ mod some_other_test {
             .expect("Failed to read line");
     }
 }
+*/
 

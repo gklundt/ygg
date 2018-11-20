@@ -36,6 +36,6 @@ mod tests {
 
         let rm = ResourceModifierKind::SpeedLimit {modifies: s, unit: v, produces: t};
 
-        rm = rm.apply_speed_limit()
+//        rm = rm.apply_speed_limit()
     }
 }
