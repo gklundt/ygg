@@ -1,16 +1,36 @@
 use std::collections::HashMap;
+use std::rc::Rc;
+use crate::uuid::guid_64::Guid;
 
 pub enum ComparisonOperatorKind { Eq, Ne, Gt, Lt, GtEq, LtEq }
+
 pub enum BoolOperatorKind { And, Not, Or, Xor }
 
-pub struct Constraint {}
+enum ConstraintRecordKind { Fact, Const, Formula, CompareOperator, BoolOperator }
 
-pub trait Constrainer {
+struct ConstraintRecord{
+    name: String,
+    record_type: ConstraintRecordKind,
+    fact_value: Option<f64>,
+    const_value: Option<f64>,
+    formula: Option<String>,
+    compare_operator: Option<ComparisonOperatorKind>,
+    bool_operator: Option<BoolOperatorKind>,
+}
+
+pub struct Constraint {
+    name: String,
+    guid: Rc<Guid>,
+    records: Vec<ConstraintRecord>,
+}
+
+pub trait ConstraintOperations {
     fn evaluate(&self) -> bool;
-    fn push_fact(&self, HashMap<String, f64>);
-    fn push_formula(&self, HashMap<String, String>);
-    fn push_compare_op(&self);
-    fn push_bool_op();
+    fn push_fact(&self, fact_name: String, fact_value: f64);
+    fn push_const(&self, fact_name: String, fact_value: f64);
+    fn push_formula(&self, formula_name: String, formula_string: String);
+    fn push_compare_op(&self, operator: ComparisonOperatorKind);
+    fn push_bool_op(&self, operator: BoolOperatorKind);
 }
 
 /*
