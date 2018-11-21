@@ -1,7 +1,8 @@
 use std::collections::HashMap;
-use crate::heuristics::resources::ResourceKind;
-use crate::heuristics::resource_modifiers::ResourceModifierKind;
+
+
 use crate::heuristics::constraints::Constraint;
+use crate::heuristics::resources::Resource;
 
 pub struct HeuristicsModel {
     // facts
@@ -16,7 +17,7 @@ pub struct HeuristicsModel {
     // https://github.com/rodolf0/tox
     formulae: HashMap<String, String>,
     constraints: HashMap<String, Constraint>,
-    resources: HashMap<String, ResourceKind>,
-    modifiers: HashMap<String, ResourceModifierKind>,
+    //resources: HashMap<String, Resource>,
+
 }
 

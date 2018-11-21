@@ -1,9 +1,23 @@
 extern crate ygg;
 
+
 pub fn main() {
-    heuristics_sandbox::main();
+    resource_sandbox::main();
 }
 
+mod resource_sandbox {
+    use ygg::heuristics::resources::Resource;
+    use ygg::metrics::uom::VolumeKind;
+    use ygg::metrics::uom::DistanceKind;
+    use ygg::uuid::guid_64::Guid;
+
+
+    pub fn main() {
+        let r = Resource::new("Hiya".to_string(), DistanceKind::Meters(12.0));
+    }
+}
+
+/*
 mod heuristics_sandbox {
     use ygg::heuristics::constraints::Constraint;
     use ygg::heuristics::constraints::ConstraintOperations;
@@ -48,6 +62,8 @@ mod heuristics_sandbox {
         }
     }
 }
+*/
+
 /*
 mod goofing {
     extern crate ygg;

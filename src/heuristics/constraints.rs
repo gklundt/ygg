@@ -1,5 +1,4 @@
 extern crate meval;
-
 use crate::uuid::guid_64::Guid;
 use std::rc::Rc;
 use std::str;
@@ -11,11 +10,23 @@ use meval::Expr;
 
 const NO_VALUE: &str = "No value provided";
 
-#[derive(Debug)]
-pub enum ComparisonOperatorKind { Eq, Ne, Gt, Lt, GtEq, LtEq }
+pub trait ConstraintOperations {
+    fn evaluate(&mut self) -> Result<bool, ConstraintViolation>;
+    fn push_var(&mut self, fact_name: String, fact_value: f64);
+    fn mut_var(&mut self, fact_name: String, fact_value: f64);
+    fn push_const(&mut self, fact_name: String, fact_value: f64);
+    fn push_constraint(&mut self, constraint_name: String, constraint_value: bool);
+    fn push_formula(&mut self, formula_name: String, formula_string: String);
+    fn push_compare_op(&mut self, operator: ComparisonOperatorKind);
+    fn push_bool_op(&mut self, operator: BoolOperatorKind);
+}
+
 
 #[derive(Debug)]
 pub enum BoolOperatorKind { And, Not, Or, Xor }
+
+#[derive(Debug)]
+pub enum ComparisonOperatorKind { Eq, Ne, Gt, Lt, GtEq, LtEq }
 
 #[derive(Debug)]
 pub enum ConstraintRecordKind { Fact, Const, Formula, Constraint, CompareOperator, BoolOperator }
@@ -41,12 +52,6 @@ pub struct ConstraintRecord {
     bool_operator: Option<BoolOperatorKind>,
 }
 
-impl ConstraintRecord {
-    pub fn update_fact(&mut self, new_value: f64) {
-        self.fact_value = Some(new_value);
-    }
-}
-
 #[derive(Debug)]
 pub struct ConstraintViolation {
     stack_index: usize,
@@ -54,6 +59,11 @@ pub struct ConstraintViolation {
     reason: String,
 }
 
+impl ConstraintRecord {
+    pub fn update_fact(&mut self, new_value: f64) {
+        self.fact_value = Some(new_value);
+    }
+}
 
 impl ConstraintViolation {
     pub fn new(stack_index: usize, record_name: String, reason: String) -> Self {
@@ -73,23 +83,11 @@ impl Error for ConstraintViolation {
     }
 }
 
-pub trait ConstraintOperations {
-    fn evaluate(&mut self) -> Result<bool, ConstraintViolation>;
-    fn push_var(&mut self, fact_name: String, fact_value: f64);
-    fn mut_var(&mut self, fact_name: String, fact_value: f64);
-    fn push_const(&mut self, fact_name: String, fact_value: f64);
-    fn push_constraint(&mut self, constraint_name: String, constraint_value: bool);
-    fn push_formula(&mut self, formula_name: String, formula_string: String);
-    fn push_compare_op(&mut self, operator: ComparisonOperatorKind);
-    fn push_bool_op(&mut self, operator: BoolOperatorKind);
-}
-
 impl Constraint {
     pub fn new(name: String) -> Self {
         Constraint { name, guid: Guid::new(), records: Vec::new(), violations: Vec::new(), errors: Vec::new() }
     }
 }
-
 
 impl ConstraintOperations for Constraint {
     fn evaluate(&mut self) -> Result<bool, ConstraintViolation> {
@@ -100,13 +98,6 @@ impl ConstraintOperations for Constraint {
         let mut i_broke = ConstraintViolation::new(0, "nothing".to_string(), "no reason".to_string());
 
         for i in 0..self.records.len() {
-//            for record in &self.records {
-//                println!("Stack: {:?}", record);
-//            }
-//            println!("Implicants: {:?}", implicants);
-//            println!("Operands: {:?}", operands);
-
-
             unsafe {
                 let rec: &ConstraintRecord = self.records.get_unchecked(i);
                 match rec.record_type {
@@ -203,14 +194,6 @@ impl ConstraintOperations for Constraint {
                 }
             }
         }
-
-
-//        for record in &self.records {
-//            println!("Stack: {:?}", record);
-//        }
-//        println!("Implicants: {:?}", implicants);
-//        println!("Operands: {:?}", operands);
-
         if let true = implicants.len() == 1 { Ok(implicants.pop_front().unwrap()) } else { Err(i_broke) }
     }
 
@@ -229,9 +212,7 @@ impl ConstraintOperations for Constraint {
 
     fn mut_var(&mut self, fact_name: String, fact_value: f64) {
         for record in self.records.iter_mut() {
-            if let true = record.name.eq(&fact_name) {
-                record.update_fact(fact_value);
-            }
+            if let true = record.name.eq(&fact_name) { record.update_fact(fact_value); }
         }
     }
 

@@ -9,9 +9,23 @@ const METER_PER_KILOMETER: f64 = 1000.0;
 pub const EQUATORIAL_RADIUS_OF_EARTH: DistanceKind = DistanceKind::Kilometers(6378.0);
 pub const POLAR_RADIUS_OF_EARTH: DistanceKind = DistanceKind::Kilometers(6357.0);
 
-
 pub trait Si {
     fn to_si(&self) -> Self;
+}
+
+pub trait UnitOfMeasureValueKind {
+    fn get_value(&self) -> f64;
+}
+
+impl UnitOfMeasureValueKind for VolumeKind {
+    fn get_value(&self) -> f64{
+
+    }
+}
+
+#[macro_export]
+macro_rules! uom {
+
 }
 
 #[derive(Debug)]
@@ -22,7 +36,6 @@ pub enum PressureKind {
     Torr(f64),
     NewtonPerSquareMeter(f64),
 }
-
 
 #[derive(Debug)]
 pub enum FrequencyKind {
@@ -59,30 +72,60 @@ pub enum DistanceKind {
     Unknown,
 }
 
-impl Si for DistanceKind {
-    fn to_si(&self) -> Self {
-        match self {
-            DistanceKind::Feet(ft) => DistanceKind::Meters(ft * METER_PER_FOOT),
-            DistanceKind::Miles(mi) => DistanceKind::Meters(mi * METER_PER_MILE),
-            DistanceKind::Kilometers(m) => DistanceKind::Meters(m * METER_PER_KILOMETER),
-            DistanceKind::Meters(m) => DistanceKind::Meters(*m),
-            DistanceKind::Inches(i) => DistanceKind::Meters(i * METER_PER_INCH),
-            _ => DistanceKind::Unknown,
-        }
-    }
+#[derive(Debug)]
+pub enum TimeKind {
+    Hours(f64),
+    Minutes(f64),
+    Seconds(f64),
+    Milliseconds(f64),
 }
 
-impl fmt::Display for DistanceKind {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match &self {
-            DistanceKind::Feet(ft) => { write!(f, "( Feet: {} )", ft) }
-            DistanceKind::Miles(mi) => { write!(f, "( Miles: {} )", mi) }
-            DistanceKind::Kilometers(km) => { write!(f, "( Kilometers: {} )", km) }
-            DistanceKind::Meters(m) => { write!(f, "( Meters: {} )", m) }
-            DistanceKind::Inches(i) => { write!(f, "( Inches: {} )", i) }
-            DistanceKind::Unknown => { write!(f, "( Unknown") }
-        }
-    }
+#[derive(Debug)]
+pub enum VelocityKind {
+    MilesPerHour(f64),
+    KilometersPerHour(f64),
+    FeetPerSecond(f64),
+    MetersPerSecond(f64),
+    Knot(f64),
+}
+
+#[derive(Debug)]
+pub enum AngularKind {
+    Degrees(f64),
+    Radians(f64),
+}
+
+#[derive(Debug)]
+pub enum PositionKind {
+    TwoDimensionEuclidean { x: DistanceKind, y: DistanceKind },
+    ThreeDimensionEuclidean { x: DistanceKind, y: DistanceKind, z: DistanceKind },
+    TwoDimensionGeo { lat: AngularKind, lng: AngularKind },
+    Spherical { radial: DistanceKind, polar: AngularKind, azimuth: AngularKind },
+    Polar { radial: DistanceKind, theta: AngularKind },
+    Unknown,
+}
+
+
+#[derive(Debug)]
+pub enum TemperatureKind {
+    Celsius(f64),
+    Fahrenheit(f64),
+    Rankine(f64),
+}
+
+#[derive(Debug)]
+pub enum VolumeKind {
+    CubicMeters(f64),
+    CubicFeet(f64),
+    CubicInches(f64),
+    CubicCentimeters(f64),
+}
+
+#[derive(Debug)]
+pub enum IlluminanceKind {
+    Candelas(f64),
+    Lumen(f64),
+    Lux(f64),
 }
 
 impl DistanceKind {
@@ -112,38 +155,6 @@ impl DistanceKind {
     }
 }
 
-#[derive(Debug)]
-pub enum TimeKind {
-    Hours(f64),
-    Minutes(f64),
-    Seconds(f64),
-    Milliseconds(f64),
-}
-
-#[derive(Debug)]
-pub enum VelocityKind {
-    MilesPerHour(f64),
-    KilometersPerHour(f64),
-    FeetPerSecond(f64),
-    MetersPerSecond(f64),
-    Knot(f64),
-}
-
-#[derive(Debug)]
-pub enum AngularKind {
-    Degrees(f64),
-    Radians(f64),
-}
-
-impl Si for AngularKind {
-    fn to_si(&self) -> Self {
-        match self {
-            AngularKind::Radians(r) => AngularKind::Radians(*r),
-            AngularKind::Degrees(d) => AngularKind::Radians(d * RAD_PER_DEG),
-        }
-    }
-}
-
 impl AngularKind {
     pub fn to_deg(&self) -> Self {
         let si: AngularKind = self.to_si();
@@ -160,6 +171,18 @@ impl AngularKind {
     }
 }
 
+impl fmt::Display for DistanceKind {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match &self {
+            DistanceKind::Feet(ft) => { write!(f, "( Feet: {} )", ft) }
+            DistanceKind::Miles(mi) => { write!(f, "( Miles: {} )", mi) }
+            DistanceKind::Kilometers(km) => { write!(f, "( Kilometers: {} )", km) }
+            DistanceKind::Meters(m) => { write!(f, "( Meters: {} )", m) }
+            DistanceKind::Inches(i) => { write!(f, "( Inches: {} )", i) }
+            DistanceKind::Unknown => { write!(f, "( Unknown") }
+        }
+    }
+}
 
 impl fmt::Display for AngularKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -168,39 +191,6 @@ impl fmt::Display for AngularKind {
             AngularKind::Radians(rad) => { write!(f, "( Radians: {} )", rad) }
         }
     }
-}
-
-
-#[derive(Debug)]
-pub enum TemperatureKind {
-    Celsius(f64),
-    Fahrenheit(f64),
-    Rankine(f64),
-}
-
-#[derive(Debug)]
-pub enum VolumeKind {
-    CubicMeters(f64),
-    CubicFeet(f64),
-    CubicInches(f64),
-    CubicCentimeters(f64),
-}
-
-#[derive(Debug)]
-pub enum IlluminanceKind {
-    Candelas(f64),
-    Lumen(f64),
-    Lux(f64),
-}
-
-#[derive(Debug)]
-pub enum PositionKind {
-    TwoDimensionEuclidean { x: DistanceKind, y: DistanceKind },
-    ThreeDimensionEuclidean { x: DistanceKind, y: DistanceKind, z: DistanceKind },
-    TwoDimensionGeo { lat: AngularKind, lng: AngularKind },
-    Spherical { radial: DistanceKind, polar: AngularKind, azimuth: AngularKind },
-    Polar { radial: DistanceKind, theta: AngularKind },
-    Unknown,
 }
 
 impl fmt::Display for PositionKind {
@@ -216,7 +206,6 @@ impl fmt::Display for PositionKind {
     }
 }
 
-
 impl Si for PositionKind {
     fn to_si(&self) -> Self {
         match self {
@@ -229,3 +218,27 @@ impl Si for PositionKind {
         }
     }
 }
+
+impl Si for AngularKind {
+    fn to_si(&self) -> Self {
+        match self {
+            AngularKind::Radians(r) => AngularKind::Radians(*r),
+            AngularKind::Degrees(d) => AngularKind::Radians(d * RAD_PER_DEG),
+        }
+    }
+}
+
+impl Si for DistanceKind {
+    fn to_si(&self) -> Self {
+        match self {
+            DistanceKind::Feet(ft) => DistanceKind::Meters(ft * METER_PER_FOOT),
+            DistanceKind::Miles(mi) => DistanceKind::Meters(mi * METER_PER_MILE),
+            DistanceKind::Kilometers(m) => DistanceKind::Meters(m * METER_PER_KILOMETER),
+            DistanceKind::Meters(m) => DistanceKind::Meters(*m),
+            DistanceKind::Inches(i) => DistanceKind::Meters(i * METER_PER_INCH),
+            _ => DistanceKind::Unknown,
+        }
+    }
+}
+
+
