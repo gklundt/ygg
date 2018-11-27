@@ -1,5 +1,7 @@
 use std::f64::consts;
 use std::fmt;
+use std::ops::Add;
+use std::ops::AddAssign;
 
 const METER_PER_FOOT: f64 = 0.3048;
 const METER_PER_MILE: f64 = 1609.34;
@@ -13,20 +15,45 @@ pub trait Si {
     fn to_si(&self) -> Self;
 }
 
-pub trait UnitOfMeasureValueKind {
-    fn get_value(&self) -> f64;
-}
+impl Add<DistanceKind> for DistanceKind  {
+    type Output = DistanceKind;
 
-impl UnitOfMeasureValueKind for VolumeKind {
-    fn get_value(&self) -> f64{
-
+    fn add(self, rhs: DistanceKind) -> <Self as Add<DistanceKind>>::Output {
+        let l = self.to_si().get_value().unwrap();
+        let r = rhs.to_si().get_value().unwrap();
+        DistanceKind::Meters(l + r)
     }
 }
 
-#[macro_export]
-macro_rules! uom {
-
+impl AddAssign for DistanceKind {
+    fn add_assign(&mut self, rhs: DistanceKind) {
+        let l = self.to_si().get_value().unwrap();
+        let r = rhs.to_si().get_value().unwrap();
+        *self = DistanceKind::Meters(l + r);
+    }
 }
+
+pub trait UnitOfMeasureValueKind {
+    fn get_value(&self) -> Option<f64>;
+}
+
+impl UnitOfMeasureValueKind for DistanceKind {
+    fn get_value(&self) -> Option<f64> {
+        match &self {
+            DistanceKind::Feet(ref x) => { Some(*x) }
+            DistanceKind::Miles(x) => { Some(*x) }
+            DistanceKind::Meters(x) => { Some(*x) }
+            DistanceKind::Kilometers(x) => { Some(*x) }
+            DistanceKind::Inches(x) => { Some(*x) }
+            DistanceKind::Unknown => None,
+        }
+    }
+}
+
+//#[macro_export]
+//macro_rules! uom {
+//
+//}
 
 #[derive(Debug)]
 pub enum PressureKind {

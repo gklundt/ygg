@@ -1,3 +1,4 @@
+#![feature(core_intrinsics)]
 extern crate ygg;
 
 
@@ -5,15 +6,76 @@ pub fn main() {
     resource_sandbox::main();
 }
 
-mod resource_sandbox {
-    use ygg::heuristics::resources::Resource;
-    use ygg::metrics::uom::VolumeKind;
+
+/*
+mod macro_sandbox {
     use ygg::metrics::uom::DistanceKind;
-    use ygg::uuid::guid_64::Guid;
+    use ygg::metrics::uom::VolumeKind;
+    macro_rules! o_O { ($x:expr) => {
+    println!("{:?}", $x)
+    }}
+
 
 
     pub fn main() {
-        let r = Resource::new("Hiya".to_string(), DistanceKind::Meters(12.0));
+
+        let d = DistanceKind::Meters(1.2);
+
+        match d {
+            DistanceKind::Meters(x) => { println!("I got an {}", x)},
+            _ => {println!("nada")},
+        }
+
+        let v = VolumeKind::CubicMeters(3.3);
+        o_O!(d);
+        o_O!(v);
+
+    }
+}
+*/
+
+mod resource_sandbox {
+    use ygg::heuristics::resources::Resource;
+    use ygg::metrics::uom::VolumeKind;
+    use ygg::uuid::guid_64::Guid;
+    use ygg::metrics::uom::UnitOfMeasureValueKind;
+
+    use std::mem;
+    use std::intrinsics;
+    use ygg::metrics::uom::DistanceKind;
+    use ygg::metrics::uom::Si;
+
+    fn print_type_of<T>(_: T) {
+        println!("{}", unsafe { intrinsics::type_name::<T>() });
+    }
+
+    pub fn main() {
+//        let r = Resource::new("Hiya".to_string(), DistanceKind::Meters(12.6));
+//
+//        println!("{:?}", r);
+//
+//        println!("{:?}", r.get_capacity().get_value().unwrap());
+//
+
+
+        let mut l = DistanceKind::Meters(12.0);
+        let r = DistanceKind::Meters(12.0);
+
+        l += r;
+
+println!("did this work? {}", l.to_si());
+//        println!("{}", &r);
+//        print_type_of(&l);
+//        print_type_of(&r);
+//
+//        let x = mem::discriminant(&l);
+//        println!("{:?}", x);
+//
+//        let y = mem::discriminant(&r);
+//        println!("{:?}", y);
+//
+//
+//        println!("The sum is {}", (l + r).to_inches());
     }
 }
 
