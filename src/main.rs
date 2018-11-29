@@ -42,40 +42,45 @@ mod resource_sandbox {
 
     use std::mem;
     use std::intrinsics;
-    use ygg::metrics::uom::DistanceKind;
-    use ygg::metrics::uom::Si;
+    use ygg::metrics::uom::distance::DistanceKind;
+    use std::rc::Rc;
 
     fn print_type_of<T>(_: T) {
         println!("{}", unsafe { intrinsics::type_name::<T>() });
     }
 
     pub fn main() {
-//        let r = Resource::new("Hiya".to_string(), DistanceKind::Meters(12.6));
-//
-//        println!("{:?}", r);
-//
-//        println!("{:?}", r.get_capacity().get_value().unwrap());
-//
+        let mut r = Resource::new("Hiya".to_string(),
+                                  DistanceKind::Kilometers(0.0),
+                                  DistanceKind::Miles(5.0),
+                                  DistanceKind::Feet(1.0));
+
+        let x = r.get_min();
+        let w = r.get_max();
+        let y = r.get_current_value();
+        let z = r.get_current_value();
+        println!("capacity => {:?} to {:?}", x, w);
+        println!("current value => {:?}", y);
+        println!("diffs => min: {:?}, max: {:?}\n", y - x, w - z);
 
 
-        let mut l = DistanceKind::Meters(12.0);
-        let r = DistanceKind::Meters(12.0);
+        r.push_modification(DistanceKind::Miles(5.0));
+        let x = r.get_min();
+        let w = r.get_max();
+        let y = r.get_current_value();
+        let z = r.get_current_value();
+        println!("capacity => {:?} to {:?}", x, w);
+        println!("current value => {:?}", y);
+        println!("diffs => min: {:?}, max: {:?}\n", y - x, w - z);
 
-        l += r;
-
-println!("did this work? {}", l.to_si());
-//        println!("{}", &r);
-//        print_type_of(&l);
-//        print_type_of(&r);
-//
-//        let x = mem::discriminant(&l);
-//        println!("{:?}", x);
-//
-//        let y = mem::discriminant(&r);
-//        println!("{:?}", y);
-//
-//
-//        println!("The sum is {}", (l + r).to_inches());
+        r.push_modification(DistanceKind::Miles(-5.0));
+        let x = r.get_min();
+        let w = r.get_max();
+        let y = r.get_current_value();
+        let z = r.get_current_value();
+        println!("capacity => {:?} to {:?}", x, w);
+        println!("current value => {:?}", y);
+        println!("diffs => min: {:?}, max: {:?}\n", y - x, w - z);
     }
 }
 

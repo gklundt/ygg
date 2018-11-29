@@ -1,4 +1,6 @@
 use crate::metrics::uom::*;
+use crate::metrics::uom::distance::DistanceKind;
+
 
 pub fn distance_between_two_points(x: &PositionKind, y: &PositionKind) -> DistanceKind {
     match (x, y) {

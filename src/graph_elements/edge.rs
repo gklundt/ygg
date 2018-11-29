@@ -7,11 +7,11 @@ use std::rc::Rc;
 #[derive(Debug)]
 pub struct Edge {
     guid: Rc<Guid>,
-    distance: Option<uom::DistanceKind>,
+    distance: Option<uom::distance::DistanceKind>,
 }
 
 impl Edge {
-    pub fn new(distance: Option<uom::DistanceKind>) -> Self {
+    pub fn new(distance: Option<uom::distance::DistanceKind>) -> Self {
         Edge { guid: Guid::new(), distance }
     }
 
@@ -19,7 +19,7 @@ impl Edge {
         Rc::clone(&self.guid)
     }
 
-    pub fn get_distance(&self) -> &Option<uom::DistanceKind> { &self.distance }
+    pub fn get_distance(&self) -> &Option<uom::distance::DistanceKind> { &self.distance }
 }
 
 impl fmt::Display for Edge {

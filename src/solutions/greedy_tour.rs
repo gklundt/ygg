@@ -1,9 +1,10 @@
 use crate::solutions;
-use crate::metrics::uom::DistanceKind;
-use crate::metrics::uom::Si;
+use crate::metrics::uom::distance::DistanceKind;
+
 use std::cmp::Ordering;
 use std::rc::Rc;
 use crate::graph_elements::node_pair::NodePair;
+use crate::metrics::uom::UnitOfMeasureValueKind;
 
 
 pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKind) {

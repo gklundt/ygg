@@ -8,8 +8,9 @@ use crate::graph_elements::node_pair::NodePair;
 use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
-use crate::metrics::uom::DistanceKind;
-use crate::metrics::uom::Si;
+use crate::metrics::uom::distance::DistanceKind;
+use crate::metrics::uom::UnitOfMeasureValueKind;
+
 
 #[derive(Debug)]
 pub struct Graph {
@@ -404,9 +405,9 @@ impl Graph {
         let mut rn: &uom::PositionKind = &uom::PositionKind::Unknown;
         if let Some(node) = &self.nodes.get(&target_node) { rn = node.get_position() };
 
-        let distance: uom::DistanceKind = formulas::distance_between_two_points(ln, rn);
+        let distance: uom::distance::DistanceKind = formulas::distance_between_two_points(ln, rn);
         let edge_distance = match distance {
-            uom::DistanceKind::Unknown => None,
+            uom::distance::DistanceKind::Unknown => None,
             _ => Some(distance),
         };
 
