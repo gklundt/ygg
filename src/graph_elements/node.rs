@@ -1,20 +1,21 @@
 use crate::uuid::guid_64::Guid;
-use crate::metrics::uom;
+use crate::metrics::uom::position;
 
 use std::fmt;
 use std::rc::Rc;
 use std::str;
 
+
 #[derive(Debug)]
 pub struct Node {
     name: Option<String>,
     guid: Rc<Guid>,
-    position: Option<uom::PositionKind>,
+    position: Option<position::PositionKind>,
 }
 
 
 impl Node {
-    pub fn new(position: Option<uom::PositionKind>, name: Option<String>) -> Rc<Node> {
+    pub fn new(position: Option<position::PositionKind>, name: Option<String>) -> Rc<Node> {
         Rc::new(Node {
             name,
             guid: Guid::new(),
@@ -26,10 +27,10 @@ impl Node {
         Rc::clone(&self.guid)
     }
 
-    pub fn get_position(&self) -> &uom::PositionKind {
+    pub fn get_position(&self) -> &position::PositionKind {
         match &self.position {
             Some(pos) => &pos,
-            None => &uom::PositionKind::Unknown,
+            None => &position::PositionKind::Unknown,
         }
     }
 

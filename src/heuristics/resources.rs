@@ -1,10 +1,9 @@
 use crate::uuid::guid_64::Guid;
-use std::rc::Rc;
 use crate::metrics::uom::UnitOfMeasureValueKind;
-use crate::metrics::uom::VolumeKind;
+use crate::metrics::uom::volume::VolumeKind;
+use std::rc::Rc;
 use std::ops::Add;
 use std::ops::AddAssign;
-
 
 #[derive(Debug)]
 pub struct Resource<T>
@@ -14,7 +13,6 @@ pub struct Resource<T>
     guid: Rc<Guid>,
     min: T,
     max: T,
-    // treat like a ledger for resource depletion
     modifications: Vec<T>,
     starting_value: T,
 
@@ -67,7 +65,6 @@ impl<T> Resource<T>
         let ledger_value: f64 = ledger.iter().sum();
         let original_value = self.starting_value.get_value().unwrap();
         let current_value = original_value + ledger_value;
-        println!("{:?} : {} : {} : {}", ledger, ledger_value, original_value, current_value);
 
         self.starting_value.set_value(current_value);
         let cp = unsafe { core::mem::transmute_copy(&self.starting_value) };

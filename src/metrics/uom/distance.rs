@@ -1,7 +1,7 @@
+use crate::metrics::uom::UnitOfMeasureValueKind;
 use std::fmt;
 use std::ops::Add;
 use std::ops::AddAssign;
-use crate::metrics::uom::UnitOfMeasureValueKind;
 use std::ops::Sub;
 
 const METER_PER_FOOT: f64 = 0.3048;
@@ -80,7 +80,6 @@ impl Add<DistanceKind> for DistanceKind {
         DistanceKind::Meters(l + r)
     }
 }
-
 
 impl AddAssign for DistanceKind {
     fn add_assign(&mut self, rhs: DistanceKind) {

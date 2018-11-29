@@ -1,14 +1,16 @@
+use crate::metrics::uom::distance;
+use crate::metrics::uom;
+use crate::metrics::uom::position;
 use crate::graph_elements::edge::Edge;
 use crate::graph_elements::node::Node;
 use crate::metrics::formulas;
-use crate::metrics::uom;
 use crate::uuid::guid_64::Guid;
 use crate::graph_elements::node_pair::NodePair;
 
 use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
-use crate::metrics::uom::distance::DistanceKind;
+
 use crate::metrics::uom::UnitOfMeasureValueKind;
 
 
@@ -238,10 +240,10 @@ impl Graph {
         &self.edge_connections
     }
 
-    pub fn get_edge_distance(&self) -> DistanceKind {
-        DistanceKind::Meters(self.edges.iter().fold(0.0, | acc, a|{let mut m = 0.0;
+    pub fn get_edge_distance(&self) -> distance::DistanceKind {
+        distance::DistanceKind::Meters(self.edges.iter().fold(0.0, | acc, a|{let mut m = 0.0;
             if let Some(distance) = a.1.get_distance() {
-                if let DistanceKind::Meters(meters) = distance.to_si() {
+                if let distance::DistanceKind::Meters(meters) = distance.to_si() {
                     m = meters;
                 }
             };
@@ -399,15 +401,15 @@ impl Graph {
     }
 
     fn create_edge_(&mut self, source_node: Rc<Guid>, target_node: Rc<Guid>) -> Rc<Edge> {
-        let mut ln: &uom::PositionKind = &uom::PositionKind::Unknown;
+        let mut ln: &position::PositionKind = &position::PositionKind::Unknown;
         if let Some(node) = &self.nodes.get(&source_node) { ln = node.get_position() };
 
-        let mut rn: &uom::PositionKind = &uom::PositionKind::Unknown;
+        let mut rn: &position::PositionKind = &position::PositionKind::Unknown;
         if let Some(node) = &self.nodes.get(&target_node) { rn = node.get_position() };
 
-        let distance: uom::distance::DistanceKind = formulas::distance_between_two_points(ln, rn);
+        let distance: distance::DistanceKind = formulas::distance_between_two_points(ln, rn);
         let edge_distance = match distance {
-            uom::distance::DistanceKind::Unknown => None,
+            distance::DistanceKind::Unknown => None,
             _ => Some(distance),
         };
 

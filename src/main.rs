@@ -36,13 +36,12 @@ mod macro_sandbox {
 
 mod resource_sandbox {
     use ygg::heuristics::resources::Resource;
-    use ygg::metrics::uom::VolumeKind;
     use ygg::uuid::guid_64::Guid;
     use ygg::metrics::uom::UnitOfMeasureValueKind;
+    use ygg::metrics::uom::distance::DistanceKind;
 
     use std::mem;
     use std::intrinsics;
-    use ygg::metrics::uom::distance::DistanceKind;
     use std::rc::Rc;
 
     fn print_type_of<T>(_: T) {
@@ -53,7 +52,7 @@ mod resource_sandbox {
         let mut r = Resource::new("Hiya".to_string(),
                                   DistanceKind::Kilometers(0.0),
                                   DistanceKind::Miles(5.0),
-                                  DistanceKind::Feet(1.0));
+                                  DistanceKind::Feet(0.0));
 
         let x = r.get_min();
         let w = r.get_max();
