@@ -9,12 +9,13 @@ pub mod angles;
 pub mod temperature;
 pub mod position;
 pub mod volume;
-pub mod Illuminance;
+pub mod illuminance;
 
-pub trait UnitOfMeasureValueKind {
+
+pub trait UnitOfMeasureValueKind : Clone + Sized{
     fn get_value(&self) -> Option<f64>;
     fn set_value(&mut self, value: f64) -> &Self;
-    fn to_si(&self) -> Self;
+    fn as_standard_unit(&mut self) -> &Self;
 }
 
 

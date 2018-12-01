@@ -95,7 +95,7 @@ impl ConstraintOperations for Constraint {
         let mut implicants = VecDeque::new();
 
 
-        let mut i_broke = ConstraintViolation::new(0, "nothing".to_string(), "no reason".to_string());
+        let i_broke = ConstraintViolation::new(0, "nothing".to_string(), "no reason".to_string());
 
         for i in 0..self.records.len() {
             unsafe {

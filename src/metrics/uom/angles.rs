@@ -1,10 +1,10 @@
-use std::f64::consts;
 use std::fmt;
 use crate::metrics::uom::UnitOfMeasureValueKind;
+use std::f64::consts;
 
 const RAD_PER_DEG: f64 = consts::PI / 180.0;
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub enum AngularKind {
     Degrees(f64),
     Radians(f64),
@@ -20,34 +20,40 @@ impl fmt::Display for AngularKind {
 }
 
 impl AngularKind {
-    pub fn to_deg(&self) -> Self {
-        let si: AngularKind = self.to_si();
-        let mut i: f64 = 0.0;
-        if let AngularKind::Radians(r) = si { i = r / RAD_PER_DEG };
-        AngularKind::Degrees(i)
+    pub fn as_deg(&mut self) -> &Self {
+        self.as_standard_unit();
+        if let Some(r) = self.get_value() { *self = AngularKind::Degrees(r / RAD_PER_DEG); }
+        self
     }
 
-    pub fn to_deg_rem(&self) -> Self {
-        let si: AngularKind = self.to_si();
-        let mut i: f64 = 0.0;
-        if let AngularKind::Radians(r) = si { i = (r / RAD_PER_DEG) % 360.0 };
-        AngularKind::Degrees(i)
+    pub fn to_deg_rem(&mut self) -> &Self {
+        self.as_standard_unit();
+        if let Some(r) = self.get_value() { *self = AngularKind::Degrees((r / RAD_PER_DEG) % 360.0); }
+        self
     }
 }
 
 impl UnitOfMeasureValueKind for AngularKind {
     fn get_value(&self) -> Option<f64> {
-        unimplemented!()
+        match &self {
+            AngularKind::Degrees(d) => Some(*d),
+            AngularKind::Radians(r) => Some(*r),
+        }
     }
 
     fn set_value(&mut self, value: f64) -> &Self {
-        unimplemented!()
+        match &self {
+            AngularKind::Degrees(_) => { *self = AngularKind::Degrees(value); }
+            AngularKind::Radians(_) => { *self = AngularKind::Radians(value); }
+        }
+        self
     }
 
-    fn to_si(&self) -> Self {
+    fn as_standard_unit(&mut self) -> &Self {
         match self {
-            AngularKind::Radians(r) => AngularKind::Radians(*r),
-            AngularKind::Degrees(d) => AngularKind::Radians(d * RAD_PER_DEG),
+            AngularKind::Radians(r) => { *self = AngularKind::Radians(*r) }
+            AngularKind::Degrees(d) => { *self = AngularKind::Radians(*d * RAD_PER_DEG) }
         }
+        self
     }
 }

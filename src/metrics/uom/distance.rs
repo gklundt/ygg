@@ -11,7 +11,7 @@ const METER_PER_KILOMETER: f64 = 1000.0;
 pub const EQUATORIAL_RADIUS_OF_EARTH: DistanceKind = DistanceKind::Kilometers(6378.0);
 pub const POLAR_RADIUS_OF_EARTH: DistanceKind = DistanceKind::Kilometers(6357.0);
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub enum DistanceKind {
     Feet(f64),
     Miles(f64),
@@ -19,6 +19,38 @@ pub enum DistanceKind {
     Kilometers(f64),
     Inches(f64),
     Unknown,
+}
+
+impl DistanceKind {
+    pub fn as_feet(&mut self) -> &Self {
+        self.as_standard_unit();
+        if let Some(m) = self.get_value() { *self = DistanceKind::Feet(m / METER_PER_FOOT) } else {
+            *self = DistanceKind::Unknown
+        }
+        self
+    }
+    pub fn as_miles(&mut self) -> &Self {
+        self.as_standard_unit();
+        if let Some(m) = self.get_value() { *self = DistanceKind::Miles(m / METER_PER_MILE) } else {
+            *self = DistanceKind::Unknown
+        }
+        self
+    }
+    pub fn as_inches(&mut self) -> &Self {
+        self.as_standard_unit();
+        if let Some(m) = self.get_value() { *self = DistanceKind::Inches(m / METER_PER_INCH) } else {
+            *self = DistanceKind::Unknown
+        }
+        self
+    }
+    pub fn as_kilometers(&mut self) -> &Self {
+        self.as_standard_unit();
+
+        if let Some(m) = self.get_value() { *self = DistanceKind::Kilometers(m / METER_PER_KILOMETER) } else {
+            *self = DistanceKind::Unknown
+        }
+        self
+    }
 }
 
 impl fmt::Display for DistanceKind {
@@ -34,58 +66,31 @@ impl fmt::Display for DistanceKind {
     }
 }
 
-impl DistanceKind {
-    pub fn to_feet(&self) -> Self {
-        let meter: DistanceKind = self.to_si();
-        let mut i: f64 = 0.0;
-        if let DistanceKind::Meters(m) = meter { i = m / METER_PER_FOOT };
-        DistanceKind::Feet(i)
-    }
-    pub fn to_miles(&self) -> Self {
-        let meter: DistanceKind = self.to_si();
-        let mut i: f64 = 0.0;
-        if let DistanceKind::Meters(m) = meter { i = m / METER_PER_MILE };
-        DistanceKind::Miles(i)
-    }
-    pub fn to_inches(&self) -> Self {
-        let meter: DistanceKind = self.to_si();
-        let mut i: f64 = 0.0;
-        if let DistanceKind::Meters(m) = meter { i = m / METER_PER_INCH };
-        DistanceKind::Inches(i)
-    }
-    pub fn to_kilometers(&self) -> Self {
-        let meter: DistanceKind = self.to_si();
-        let mut i: f64 = 0.0;
-        if let DistanceKind::Meters(m) = meter { i = m / METER_PER_KILOMETER };
-        DistanceKind::Kilometers(i)
-    }
-}
-
 impl Sub<DistanceKind> for DistanceKind {
     type Output = DistanceKind;
 
-    fn sub(self, rhs: DistanceKind) -> <Self as Sub<DistanceKind>>::Output{
-        let l = self.to_si().get_value().unwrap();
-        let r = rhs.to_si().get_value().unwrap();
-        DistanceKind::Meters(l - r)
+    fn sub(self, rhs: DistanceKind) -> Self {
+        let l_value = self.clone().as_standard_unit().get_value().unwrap();
+        let r_value = rhs.clone().as_standard_unit().get_value().unwrap();
+        DistanceKind::Meters(l_value - r_value)
     }
 }
 
 impl Add<DistanceKind> for DistanceKind {
     type Output = DistanceKind;
 
-    fn add(self, rhs: DistanceKind) -> <Self as Add<DistanceKind>>::Output {
-        let l = self.to_si().get_value().unwrap();
-        let r = rhs.to_si().get_value().unwrap();
-        DistanceKind::Meters(l + r)
+    fn add(self, rhs: DistanceKind) -> Self {
+        let l_value = self.clone().as_standard_unit().get_value().unwrap();
+        let r_value = rhs.clone().as_standard_unit().get_value().unwrap();
+        DistanceKind::Meters(l_value + r_value)
     }
 }
 
 impl AddAssign for DistanceKind {
     fn add_assign(&mut self, rhs: DistanceKind) {
-        let l = self.to_si().get_value().unwrap();
-        let r = rhs.to_si().get_value().unwrap();
-        *self = DistanceKind::Meters(l + r);
+        let l_value = self.as_standard_unit().get_value().unwrap();
+        let r_value = rhs.clone().as_standard_unit().get_value().unwrap();
+        self.set_value(l_value + r_value);
     }
 }
 
@@ -113,15 +118,16 @@ impl UnitOfMeasureValueKind for DistanceKind {
         self
     }
 
-    fn to_si(&self) -> Self {
+    fn as_standard_unit(&mut self) -> &Self {
         match self {
-            DistanceKind::Feet(ft) => DistanceKind::Meters(ft * METER_PER_FOOT),
-            DistanceKind::Miles(mi) => DistanceKind::Meters(mi * METER_PER_MILE),
-            DistanceKind::Kilometers(m) => DistanceKind::Meters(m * METER_PER_KILOMETER),
-            DistanceKind::Meters(m) => DistanceKind::Meters(*m),
-            DistanceKind::Inches(i) => DistanceKind::Meters(i * METER_PER_INCH),
-            _ => DistanceKind::Unknown,
+            DistanceKind::Feet(ft) => { *self = DistanceKind::Meters(*ft * METER_PER_FOOT) }
+            DistanceKind::Miles(mi) => { *self = DistanceKind::Meters(*mi * METER_PER_MILE) }
+            DistanceKind::Kilometers(m) => { *self = DistanceKind::Meters(*m * METER_PER_KILOMETER) }
+            DistanceKind::Meters(m) => { *self = DistanceKind::Meters(*m) }
+            DistanceKind::Inches(i) => { *self = DistanceKind::Meters(*i * METER_PER_INCH) }
+            _ => { *self = DistanceKind::Unknown }
         }
+        self
     }
 }
 

@@ -1,5 +1,4 @@
 use crate::metrics::uom::distance;
-use crate::metrics::uom;
 use crate::metrics::uom::position;
 use crate::graph_elements::edge::Edge;
 use crate::graph_elements::node::Node;
@@ -241,13 +240,15 @@ impl Graph {
     }
 
     pub fn get_edge_distance(&self) -> distance::DistanceKind {
-        distance::DistanceKind::Meters(self.edges.iter().fold(0.0, | acc, a|{let mut m = 0.0;
-            if let Some(distance) = a.1.get_distance() {
-                if let distance::DistanceKind::Meters(meters) = distance.to_si() {
-                    m = meters;
+        distance::DistanceKind::Meters(self.edges.iter().fold(0.0, |acc, a| {
+            let mut m = 0.0;
+            if let Some(mut distance) = a.1.get_distance() {
+                if let distance::DistanceKind::Meters(meters) = distance.as_standard_unit() {
+                    m = *meters;
                 }
             };
-            acc + m}))
+            acc + m
+        }))
     }
 
     pub fn get_degree_of_node(&self, node: Rc<Guid>) -> usize {
@@ -407,7 +408,7 @@ impl Graph {
         let mut rn: &position::PositionKind = &position::PositionKind::Unknown;
         if let Some(node) = &self.nodes.get(&target_node) { rn = node.get_position() };
 
-        let distance: distance::DistanceKind = formulas::distance_between_two_points(ln, rn);
+        let distance: distance::DistanceKind = formulas::distance_between_two_points(ln.clone(), rn.clone());
         let edge_distance = match distance {
             distance::DistanceKind::Unknown => None,
             _ => Some(distance),

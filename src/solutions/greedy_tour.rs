@@ -19,7 +19,7 @@ pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKin
             for edge in re_hash_edges.iter() {
                 if let Some(edge_connection) = re_hash_connections.get(edge.0) {
                     if let Some(distance_kind) = edge.1.get_distance() {
-                        if let DistanceKind::Meters(distance) = distance_kind.to_si() {
+                        if let DistanceKind::Meters(distance) = distance_kind.clone().as_standard_unit().clone() {
                             let val = (edge_connection.get_pair().0.clone(), edge.0.clone(), edge_connection.get_pair().1.clone(), distance);
                             edge_distances.push(val);
                         } else { return; } // SI unit is not meters for some reason.
