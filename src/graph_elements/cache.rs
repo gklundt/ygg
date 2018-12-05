@@ -6,21 +6,14 @@ use crate::graph_elements::node_pair::NodePair;
 pub struct TreeCache {
     node_pairs: Vec<Rc<NodePair>>,
     paths: Vec<(Vec<Rc<Guid>>, Vec<Rc<NodePair>>)>,
-//    metrics: CacheMetrics,
 
 }
-
-//struct CacheMetrics {
-//    hits: u32,
-//    misses: u32,
-//}
 
 impl TreeCache {
     pub fn new() -> Self {
         TreeCache {
             node_pairs: Vec::new(),
             paths: Vec::new(),
-//            metrics: CacheMetrics { hits: 0, misses: 0 },
         }
     }
 
@@ -110,9 +103,6 @@ impl TreeCache {
                         params = self.contains_cycle_(peer.clone(), params);
                     }
                 }
-
-
-
             }
         }
         params

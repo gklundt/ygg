@@ -3,7 +3,8 @@ use crate::metrics::uom::angles;
 use crate::metrics::uom::UnitOfMeasureValueKind;
 use std::fmt;
 
-#[derive(Debug, Copy, Clone)]
+
+#[derive(Debug, Clone)]
 pub enum PositionKind {
     TwoDimensionEuclidean { x: distance::DistanceKind, y: distance::DistanceKind },
     ThreeDimensionEuclidean { x: distance::DistanceKind, y: distance::DistanceKind, z: distance::DistanceKind },
@@ -23,18 +24,45 @@ impl UnitOfMeasureValueKind for PositionKind {
         unimplemented!()
     }
 
-    fn as_standard_unit(&mut self) -> &Self {
+    fn as_standard_unit(&mut self) -> &mut Self {
         match self {
             PositionKind::TwoDimensionEuclidean { x, y } =>
-                { *self = PositionKind::TwoDimensionEuclidean { x: x.clone().as_standard_unit().clone(), y: y.clone().as_standard_unit().clone() } }
+                {
+                    *self = PositionKind::TwoDimensionEuclidean {
+                        y: y.clone().as_standard_unit().clone(),
+                        x: x.clone().as_standard_unit().clone(),
+                    }
+                }
             PositionKind::ThreeDimensionEuclidean { x, y, z } =>
-                { *self = PositionKind::ThreeDimensionEuclidean { x: x.clone().as_standard_unit().clone(), y: y.clone().as_standard_unit().clone(), z: z.clone().as_standard_unit().clone() } }
+                {
+                    *self = PositionKind::ThreeDimensionEuclidean {
+                        x: x.clone().as_standard_unit().clone(),
+                        y: y.clone().as_standard_unit().clone(),
+                        z: z.clone().as_standard_unit().clone(),
+                    }
+                }
             PositionKind::TwoDimensionGeo { lat, lng } =>
-                { *self = PositionKind::TwoDimensionGeo { lat: lat.clone().as_standard_unit().clone(), lng: lng.clone().as_standard_unit().clone() } }
+                {
+                    *self = PositionKind::TwoDimensionGeo {
+                        lat: lat.clone().as_standard_unit().clone(),
+                        lng: lng.clone().as_standard_unit().clone(),
+                    }
+                }
             PositionKind::Polar { radial, theta } =>
-                { *self = PositionKind::Polar { radial: radial.clone().as_standard_unit().clone(), theta: theta.clone().as_standard_unit().clone() } }
+                {
+                    *self = PositionKind::Polar {
+                        radial: radial.clone().as_standard_unit().clone(),
+                        theta: theta.clone().as_standard_unit().clone(),
+                    }
+                }
             PositionKind::Spherical { radial, polar, azimuth } =>
-                { *self = PositionKind::Spherical { radial: radial.clone().as_standard_unit().clone(), polar: polar.clone().as_standard_unit().clone(), azimuth: azimuth.clone().as_standard_unit().clone() } }
+                {
+                    *self = PositionKind::Spherical {
+                        radial: radial.clone().as_standard_unit().clone(),
+                        polar: polar.clone().as_standard_unit().clone(),
+                        azimuth: azimuth.clone().as_standard_unit().clone(),
+                    }
+                }
             PositionKind::Unknown =>
                 { *self = PositionKind::Unknown }
         }

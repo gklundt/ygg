@@ -5,4 +5,5 @@ pub enum PressureKind {
     Atmosphere(f64),
     Torr(f64),
     NewtonPerSquareMeter(f64),
+    Unknown,
 }

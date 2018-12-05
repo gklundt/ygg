@@ -4,4 +4,5 @@ pub enum AccountKind {
     UKPounds(f64),
     DEMarks(f64),
     MXPeso(f64),
+    Unknown,
 }

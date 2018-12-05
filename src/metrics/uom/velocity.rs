@@ -5,4 +5,5 @@ pub enum VelocityKind {
     FeetPerSecond(f64),
     MetersPerSecond(f64),
     Knot(f64),
+    Unknown,
 }

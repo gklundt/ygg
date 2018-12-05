@@ -1,80 +1,62 @@
 use crate::uuid::guid_64::Guid;
 use crate::metrics::uom::UnitOfMeasureValueKind;
 use std::rc::Rc;
-//use std::ops::Add;
+use core::borrow::Borrow;
 
 #[derive(Debug, Clone)]
-pub struct Resource<T: UnitOfMeasureValueKind> {
+pub struct Resource<T: UnitOfMeasureValueKind + ?Sized> {
     name: String,
     guid: Rc<Guid>,
     min: Box<T>,
     max: Box<T>,
     modifications: Vec<Box<T>>,
     starting_value: Box<T>,
-
+    current_value: Box<T>,
 }
 
+impl<T: UnitOfMeasureValueKind> Resource<T> {
+    pub fn new(name: String, min: Box<T>, max: Box<T>, starting_value: Box<T>) -> Self {
+        let min_si = Box::new(min.clone().as_standard_unit().clone());
+        let max_si = Box::new(max.clone().as_standard_unit().clone());
+        let sv_si = Box::new(starting_value.clone().as_standard_unit().clone());
+        let cv_si = Box::new(starting_value.clone().as_standard_unit().clone());
 
-impl<T> Resource<T>
-    where T: UnitOfMeasureValueKind, T: std::fmt::Debug {
-    pub fn new(name: String, mut min: T, mut max: T, mut starting_value: T) -> Self {
-        min.as_standard_unit();
-        max.as_standard_unit();
-        starting_value.as_standard_unit();
-
-        let m = Box::new(min.clone());
-        let n = Box::new(max.clone());
-        let o = Box::new(starting_value.clone());
         Resource {
             name,
             guid: Guid::new(),
-            min: m,
-            max: n,
+            min: min_si,
+            max: max_si,
             modifications: Vec::new(),
-            starting_value: o,
+            starting_value: sv_si,
+            current_value: cv_si,
         }
     }
 
-    pub fn get_min(&self) -> T {
-        *self.min.clone()
+    pub fn get_min(&self) -> &T {
+        self.min.borrow()
     }
 
-    pub fn get_max(&self) -> T {
-        *self.max.clone()
+    pub fn get_max(&self) -> &T {
+        self.max.borrow()
     }
 
-    pub fn push_modification(&mut self, mut modification: T) {
-        &self.modifications.push(Box::new(modification.as_standard_unit().clone()));
+    pub fn push_modification(&mut self, modification: Box<T>) {
+        &self.modifications.push(Box::new(modification.clone().as_standard_unit().clone()));
     }
 
-    pub fn get_current_value(&mut self) -> T {
-        let mut ledger: Vec<f64> = Vec::new();
+    pub fn get_current_value(&mut self) -> &T {
+        let mut ledger_value = 0.0;
         for modification in &self.modifications {
-            let i = modification.clone().get_value().unwrap();
-            ledger.push(i);
+            ledger_value += modification.get_value().unwrap();
         }
 
-        let ledger_value: f64 = ledger.iter().sum();
         let original_value = self.starting_value.get_value().unwrap();
         let current_value = original_value + ledger_value;
-        self.starting_value.clone().set_value(current_value).clone()
+        self.current_value.set_value(current_value);
+        self.current_value.borrow()
     }
 }
 
-#[cfg(tests)]
-mod tests {
-    use crate::heuristics::resources::Resource;
-    use crate::metrics::uom::DistanceKind;
-    use crate::metrics::uom::distance::DistanceKind;
-
-    #[test]
-    fn test_this() {
-        let r = Resource::new("Soy yo".to_string(),
-                              DistanceKind::Meters(0.0),
-                              DistanceKind::Meters(100.0),
-                              DistanceKind::Meters(0.0));
-    }
-}
 
 
 

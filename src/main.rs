@@ -3,40 +3,44 @@ extern crate ygg;
 
 
 pub fn main() {
-    test_boxed::main();
+    traveler_sandbox::main();
 }
 
 // Boxed Generics
+/*
 mod test_boxed {
-    trait Noun { fn hooplah(); }
+    pub trait Noun {}
 
     #[derive(Debug)]
     enum ThingType { Car, House, Rock }
-
-    impl Noun for ThingType { fn hooplah() { println!("I'm a thing!!") } }
+    impl Noun for ThingType {}
 
     #[derive(Debug)]
     enum PlaceType { NewYork, Home, Denton }
-
-    impl Noun for PlaceType { fn hooplah() { println!("I'm a place!!") } }
+    impl Noun for PlaceType {}
 
     #[derive(Debug)]
     enum PersonType { Dad, Mom, Granny }
+    impl Noun for PersonType {}
 
-    impl Noun for PersonType { fn hooplah() { println!("I'm a person!!") } }
-
-    pub trait Thingy { fn ima(&self); }
+    pub trait Thingy {}
 
     #[derive(Debug)]
     pub struct Thing<T: Noun> { name: String, value: String, noun: Box<T> }
+    impl<T: Noun> Thingy for Thing<T> {}
 
-    impl<T: Noun> Thingy for Thing<T> { fn ima(&self) { println!("I'm a {:?}", self.noun) } }
-
-    pub trait Thingies<N: Noun> { fn a(&mut self, noun: N); }
+    pub trait Thingies
+    {
+        type N;
+        fn a(&mut self, noun: Self::N);
+    }
 
     pub struct Things<T: Thingy> { things: Vec<Box<T>> }
 
-    impl<N: Noun, T: Thingy> Thingies for Things<T> { fn a(&mut self, noun: N) { self.things.push(noun); } }
+    impl<T: Thingy> Thingies for Things<T> {
+        type N = T;
+        fn a(&mut self, noun: Self::N) { self.things.push(Box::new(noun)); }
+    }
 
 
     pub fn main() {
@@ -54,69 +58,171 @@ mod test_boxed {
 //        t4.a(t3);
     }
 }
-
-// Traveler
+*/
 /*
-mod traveler_sandbox {
-    use ygg::metrics::uom::distance;
-    use ygg::metrics::uom::time;
-    use ygg::heuristics::resources::Resource;
 
-    //    use ygg::heuristics::travelers::Traveler;
-//    use std::rc::Rc;
-    use ygg::metrics::uom::UnitOfMeasureValueKind;
-    use std::any::Any;
+pub mod moc_metrics {
+    pub mod uom {
+        use std::fmt::Debug;
+
+        pub trait UnitOfMeasure: Debug { fn uom_method(&self); }
+
+        pub mod distance {
+            use crate::moc_metrics::uom::UnitOfMeasure;
+            use crate::moc_heuristics::moc_resources::Res;
+
+            #[derive(Debug, Clone)]
+            pub enum D { Foot(f64) }
+
+            impl Res<dyn UnitOfMeasure> for D {}
+
+            impl UnitOfMeasure for D { fn uom_method(&self) { println!("I am D.") } }
+        }
+
+        pub mod time {
+            use crate::moc_metrics::uom::UnitOfMeasure;
+            use crate::moc_heuristics::moc_resources::Res;
+
+            #[derive(Debug, Clone)]
+            pub enum T { Hour(f64) }
+
+            impl UnitOfMeasure for T { fn uom_method(&self) { println!("I am T.") } }
+
+            impl Res<dyn UnitOfMeasure> for T {}
+        }
+    }
+}
+
+pub mod moc_heuristics {
+    pub mod moc_resources {
+        use crate::moc_metrics::uom::UnitOfMeasure;
+        use std::fmt::Debug;
+
+        pub trait Res<T: UnitOfMeasure + ?Sized>: Debug {}
+
+        impl<T: UnitOfMeasure + ?Sized> Res<dyn UnitOfMeasure> for Resource<T> {}
+
+        #[derive(Debug, Clone)]
+        pub struct Resource<T: UnitOfMeasure + ?Sized> {
+            my_uom: Box<T>,
+            my_ledger: Vec<Box<T>>,
+        }
+
+        impl<T: UnitOfMeasure + ?Sized> Resource<T> {
+            pub fn new(my_uom: Box<T>) -> Self {
+                Resource { my_uom, my_ledger: Vec::new() }
+            }
+            pub fn push_mod(&mut self, modification: Box<T>) {
+                self.my_ledger.push(modification);
+            }
+        }
+    }
+
+    pub mod moc_traveler {
+        use crate::moc_heuristics::moc_resources::Res;
+        use crate::moc_metrics::uom::UnitOfMeasure;
+        use std::marker::PhantomData;
+
+        #[derive(Debug)]
+        pub struct Traveler<T: UnitOfMeasure + ?Sized, R: Res<T> + ?Sized> {
+            my_resources: Vec<Box<R>>,
+            phantom: PhantomData<T>,
+        }
+
+        impl<T: UnitOfMeasure + ?Sized, R: Res<T> + ?Sized> Traveler<T, R> {
+            pub fn new() -> Self { Traveler { my_resources: Vec::new(), phantom: PhantomData } }
+        }
+
+        pub trait trav<T: UnitOfMeasure + ?Sized, R: Res<T> + ?Sized> {
+            fn push_resources(&mut self, rec: Box<R>);
+        }
+
+        impl<T: UnitOfMeasure + ?Sized, R: Res<T> + ?Sized> trav<T, R> for Traveler<T, R> {
+            fn push_resources(&mut self, rec: Box<R>) {
+                self.my_resources.push(rec);
+            }
+        }
+    }
+}
+
+*/
+
+// Mock Traveler
+/*
+mod moc_traveler_sandbox {
+    use crate::moc_metrics::uom::distance::D;
+    use crate::moc_metrics::uom::time::T;
+    use crate::moc_heuristics::moc_resources::Resource;
+    use crate::moc_heuristics::moc_traveler::Traveler;
+    use crate::moc_metrics::uom::UnitOfMeasure;
+    use crate::moc_heuristics::moc_traveler::trav;
+    use crate::moc_heuristics::moc_resources::Res;
+
 
     pub fn main() {
-        let distance_resource_name = "Distance".to_string();
-        let distance_resource_min = distance::DistanceKind::Miles(0.0);
-        let distance_resource_max = distance::DistanceKind::Miles(1000.0);
-        let distance_resource_start = distance::DistanceKind::Miles(0.0);
+        let d = Box::new(D::Foot(1.0));
+        let t = Box::new(T::Hour(1.0));
 
+        d.uom_method();
+        t.uom_method();
 
-        let time_resource_name = "Time".to_string();
-        let time_resource_min = time::TimeKind::Hours(0.0);
-        let time_resource_max = time::TimeKind::Hours(8.0);
-        let time_resource_start = time::TimeKind::Hours(0.0);
+        let mut r1 = Resource::new(d.clone());
+        let mut r2 = Resource::new(t.clone());
 
+        r1.push_mod(d.clone());
+        r1.push_mod(d.clone());
+        r1.push_mod(d.clone());
 
-        let distance_resource =
-            Resource::new(
-                distance_resource_name,
-                distance_resource_min,
-                distance_resource_max,
-                distance_resource_start,
-            );
+        r2.push_mod(t.clone());
+        r2.push_mod(t.clone());
+        r2.push_mod(t.clone());
 
-        let time_resource =
-            Resource::new(
-                time_resource_name,
-                time_resource_min,
-                time_resource_max,
-                time_resource_start,
-            );
+        let mut tr = Traveler::new();
 
+        tr.push_resources(Box::new(r1.clone()) as Box<Res<UnitOfMeasure>>);
+        tr.push_resources(Box::new(r2.clone()) as Box<Res<UnitOfMeasure>>);
 
-        let mut x = [
-            &distance_resource,
-            &time_resource,
-        ];
-
-        println!("{:?}\n{:?}", time_resource.clone().get_current_value(), distance_resource.clone().get_current_value());
-
-
-//        let mut v:Vec<Box<UnitOfMeasureValueKind>>= Vec::new();
-//        v.push(Box::new(time_resource));
-//        v.push(Box::new(distance_resource));
-
-//        let traveler_name = "Fred".to_string();
-//        let mut traveler = Traveler::new(traveler_name);
-//        traveler.push_resource(Rc::new(distance_resource));
-//        traveler.push_resource(Rc::new(time_resource));
+        println!("{:?}", tr);
     }
 }
 */
 
+// Traveler
+mod traveler_sandbox {
+    use ygg::metrics::uom::distance::DistanceKind;
+    use ygg::metrics::uom::time::TimeKind;
+    use ygg::heuristics::resources::Resource;
+    use ygg::heuristics::travelers::Traveler;
+    use ygg::heuristics::travelers::TravelerTrait;
+    use ygg::metrics::uom::UnitOfMeasureValueKind;
+
+    pub fn main() {
+        let d_min = DistanceKind::Meters(1.0);
+        let d_max = DistanceKind::Meters(1.0);
+        let d_start = DistanceKind::Meters(1.0);
+        let t_min = TimeKind::Hours(1.0);
+        let t_max = TimeKind::Hours(1.0);
+        let t_start = TimeKind::Hours(1.0);
+
+
+        let rd = Resource::new(
+            "".to_string(),
+            Box::new(d_min),
+            Box::new(d_max),
+            Box::new(d_start));
+        let rt = Resource::new(
+            "".to_string(),
+            Box::new(t_min),
+            Box::new(t_max),
+            Box::new(t_start));
+
+
+
+
+
+        println!("{:?}\n{:?}", rd, rt);
+    }
+}
 // Macro
 /*
 mod macro_sandbox {

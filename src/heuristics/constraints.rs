@@ -21,7 +21,6 @@ pub trait ConstraintOperations {
     fn push_bool_op(&mut self, operator: BoolOperatorKind);
 }
 
-
 #[derive(Debug)]
 pub enum BoolOperatorKind { And, Not, Or, Xor }
 
@@ -38,49 +37,6 @@ pub struct Constraint {
     records: Vec<ConstraintRecord>,
     violations: Vec<ConstraintViolation>,
     errors: Vec<ConstraintViolation>,
-}
-
-#[derive(Debug)]
-pub struct ConstraintRecord {
-    name: String,
-    record_type: ConstraintRecordKind,
-    fact_value: Option<f64>,
-    const_value: Option<f64>,
-    constraint_value: Option<bool>,
-    formula: Option<String>,
-    compare_operator: Option<ComparisonOperatorKind>,
-    bool_operator: Option<BoolOperatorKind>,
-}
-
-#[derive(Debug)]
-pub struct ConstraintViolation {
-    stack_index: usize,
-    record_name: String,
-    reason: String,
-}
-
-impl ConstraintRecord {
-    pub fn update_fact(&mut self, new_value: f64) {
-        self.fact_value = Some(new_value);
-    }
-}
-
-impl ConstraintViolation {
-    pub fn new(stack_index: usize, record_name: String, reason: String) -> Self {
-        ConstraintViolation { stack_index, record_name, reason }
-    }
-}
-
-impl fmt::Display for ConstraintViolation {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.reason)
-    }
-}
-
-impl Error for ConstraintViolation {
-    fn description(&self) -> &str {
-        self.reason.as_str()
-    }
 }
 
 impl Constraint {
@@ -280,5 +236,48 @@ impl ConstraintOperations for Constraint {
             bool_operator: Some(operator),
             constraint_value: None,
         });
+    }
+}
+
+#[derive(Debug)]
+pub struct ConstraintRecord {
+    name: String,
+    record_type: ConstraintRecordKind,
+    fact_value: Option<f64>,
+    const_value: Option<f64>,
+    constraint_value: Option<bool>,
+    formula: Option<String>,
+    compare_operator: Option<ComparisonOperatorKind>,
+    bool_operator: Option<BoolOperatorKind>,
+}
+
+impl ConstraintRecord {
+    pub fn update_fact(&mut self, new_value: f64) {
+        self.fact_value = Some(new_value);
+    }
+}
+
+#[derive(Debug)]
+pub struct ConstraintViolation {
+    stack_index: usize,
+    record_name: String,
+    reason: String,
+}
+
+impl ConstraintViolation {
+    pub fn new(stack_index: usize, record_name: String, reason: String) -> Self {
+        ConstraintViolation { stack_index, record_name, reason }
+    }
+}
+
+impl fmt::Display for ConstraintViolation {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.reason)
+    }
+}
+
+impl Error for ConstraintViolation {
+    fn description(&self) -> &str {
+        self.reason.as_str()
     }
 }

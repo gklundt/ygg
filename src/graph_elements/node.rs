@@ -5,14 +5,12 @@ use std::fmt;
 use std::rc::Rc;
 use std::str;
 
-
 #[derive(Debug)]
 pub struct Node {
     name: Option<String>,
     guid: Rc<Guid>,
     position: Option<position::PositionKind>,
 }
-
 
 impl Node {
     pub fn new(position: Option<position::PositionKind>, name: Option<String>) -> Rc<Node> {

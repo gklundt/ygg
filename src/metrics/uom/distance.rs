@@ -11,7 +11,7 @@ const METER_PER_KILOMETER: f64 = 1000.0;
 pub const EQUATORIAL_RADIUS_OF_EARTH: DistanceKind = DistanceKind::Kilometers(6378.0);
 pub const POLAR_RADIUS_OF_EARTH: DistanceKind = DistanceKind::Kilometers(6357.0);
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub enum DistanceKind {
     Feet(f64),
     Miles(f64),
@@ -94,6 +94,8 @@ impl AddAssign for DistanceKind {
     }
 }
 
+
+
 impl UnitOfMeasureValueKind for DistanceKind {
     fn get_value(&self) -> Option<f64> {
         match &self {
@@ -118,7 +120,7 @@ impl UnitOfMeasureValueKind for DistanceKind {
         self
     }
 
-    fn as_standard_unit(&mut self) -> &Self {
+    fn as_standard_unit(&mut self) -> &mut Self {
         match self {
             DistanceKind::Feet(ft) => { *self = DistanceKind::Meters(*ft * METER_PER_FOOT) }
             DistanceKind::Miles(mi) => { *self = DistanceKind::Meters(*mi * METER_PER_MILE) }

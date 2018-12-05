@@ -19,7 +19,9 @@ impl Edge {
         Rc::clone(&self.guid)
     }
 
-    pub fn get_distance(&self) -> &Option<uom::distance::DistanceKind> { &self.distance }
+    pub fn get_distance(&self) -> &Option<uom::distance::DistanceKind> {
+        &self.distance
+    }
 }
 
 impl fmt::Display for Edge {

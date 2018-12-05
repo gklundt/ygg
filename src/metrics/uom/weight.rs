@@ -5,4 +5,5 @@ pub enum WeightKind {
     Stones(f64),
     KiloPounds(f64),
     Newtons(f64),
+    Unknown,
 }
