@@ -5,7 +5,7 @@ use std::f64::consts;
 
 const RAD_PER_DEG: f64 = consts::PI / 180.0;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug)]
 pub enum AngularKind {
     Degrees(f64),
     Radians(f64),
@@ -61,5 +61,13 @@ impl UnitOfMeasureValueKind for AngularKind {
             AngularKind::Unknown => { *self = AngularKind::Unknown }
         }
         self
+    }
+
+    fn clone(&self) -> Self where Self: Sized {
+        match self {
+            AngularKind::Radians(r) => AngularKind::Radians(*r),
+            AngularKind::Degrees(d) => AngularKind::Degrees(*d),
+            AngularKind::Unknown => AngularKind::Unknown,
+        }
     }
 }

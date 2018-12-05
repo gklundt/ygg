@@ -1,8 +1,9 @@
 use crate::metrics::uom::UnitOfMeasureValueKind;
 use std::fmt;
+use crate::heuristics::resources::ResourceTrait;
 
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum TimeKind {
     Hours(f64),
     Minutes(f64),
@@ -43,6 +44,16 @@ impl UnitOfMeasureValueKind for TimeKind {
         }
         self
     }
+
+    fn clone(&self) -> Self where Self: Sized {
+        match self {
+            TimeKind::Hours(x) => TimeKind::Hours(*x),
+            TimeKind::Minutes(x) => TimeKind::Minutes(*x),
+            TimeKind::Seconds(x) => TimeKind::Seconds(*x),
+            TimeKind::Milliseconds(x) => TimeKind::Milliseconds(*x),
+            TimeKind::Unknown => TimeKind::Unknown
+        }
+    }
 }
 
 impl fmt::Display for TimeKind {
@@ -56,3 +67,5 @@ impl fmt::Display for TimeKind {
         }
     }
 }
+
+impl ResourceTrait<dyn UnitOfMeasureValueKind> for TimeKind {}

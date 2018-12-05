@@ -2,6 +2,7 @@ use crate::uuid::guid_64::Guid;
 use crate::metrics::uom::UnitOfMeasureValueKind;
 use std::rc::Rc;
 use core::borrow::Borrow;
+use std::fmt::Debug;
 
 #[derive(Debug, Clone)]
 pub struct Resource<T: UnitOfMeasureValueKind + ?Sized> {
@@ -14,8 +15,12 @@ pub struct Resource<T: UnitOfMeasureValueKind + ?Sized> {
     current_value: Box<T>,
 }
 
+pub trait ResourceTrait<T: UnitOfMeasureValueKind + ?Sized>: Debug {}
+
+impl<T: UnitOfMeasureValueKind + ?Sized> ResourceTrait<dyn UnitOfMeasureValueKind> for Resource<T> {}
+
 impl<T: UnitOfMeasureValueKind> Resource<T> {
-    pub fn new(name: String, min: Box<T>, max: Box<T>, starting_value: Box<T>) -> Self {
+    pub fn new(name: String, min: Box<T>, max: Box<T>, starting_value: Box<T>) -> Self where T: Sized {
         let min_si = Box::new(min.clone().as_standard_unit().clone());
         let max_si = Box::new(max.clone().as_standard_unit().clone());
         let sv_si = Box::new(starting_value.clone().as_standard_unit().clone());
@@ -56,6 +61,11 @@ impl<T: UnitOfMeasureValueKind> Resource<T> {
         self.current_value.borrow()
     }
 }
+
+
+
+
+
 
 
 

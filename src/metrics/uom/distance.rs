@@ -3,6 +3,7 @@ use std::fmt;
 use std::ops::Add;
 use std::ops::AddAssign;
 use std::ops::Sub;
+use crate::heuristics::resources::ResourceTrait;
 
 const METER_PER_FOOT: f64 = 0.3048;
 const METER_PER_MILE: f64 = 1609.34;
@@ -11,7 +12,7 @@ const METER_PER_KILOMETER: f64 = 1000.0;
 pub const EQUATORIAL_RADIUS_OF_EARTH: DistanceKind = DistanceKind::Kilometers(6378.0);
 pub const POLAR_RADIUS_OF_EARTH: DistanceKind = DistanceKind::Kilometers(6357.0);
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum DistanceKind {
     Feet(f64),
     Miles(f64),
@@ -95,7 +96,6 @@ impl AddAssign for DistanceKind {
 }
 
 
-
 impl UnitOfMeasureValueKind for DistanceKind {
     fn get_value(&self) -> Option<f64> {
         match &self {
@@ -131,5 +131,17 @@ impl UnitOfMeasureValueKind for DistanceKind {
         }
         self
     }
+
+    fn clone(&self) -> Self where Self: Sized {
+        match self {
+            DistanceKind::Feet(x) => DistanceKind::Feet(*x),
+            DistanceKind::Miles(x) => DistanceKind::Miles(*x),
+            DistanceKind::Meters(x) => DistanceKind::Meters(*x),
+            DistanceKind::Kilometers(x) => DistanceKind::Kilometers(*x),
+            DistanceKind::Inches(x) => DistanceKind::Inches(*x),
+            DistanceKind::Unknown => DistanceKind::Unknown,
+        }
+    }
 }
 
+impl ResourceTrait<dyn UnitOfMeasureValueKind> for DistanceKind {}

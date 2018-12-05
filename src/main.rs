@@ -195,6 +195,8 @@ mod traveler_sandbox {
     use ygg::heuristics::travelers::Traveler;
     use ygg::heuristics::travelers::TravelerTrait;
     use ygg::metrics::uom::UnitOfMeasureValueKind;
+    use ygg::heuristics::resources::ResourceTrait;
+    use std::rc::Rc;
 
     pub fn main() {
         let d_min = DistanceKind::Meters(1.0);
@@ -205,22 +207,36 @@ mod traveler_sandbox {
         let t_start = TimeKind::Hours(1.0);
 
 
-        let rd = Resource::new(
+        let mut rd = Resource::new(
             "".to_string(),
-            Box::new(d_min),
-            Box::new(d_max),
-            Box::new(d_start));
+            Box::new(d_min.clone()),
+            Box::new(d_max.clone()),
+            Box::new(d_start.clone()));
+
+        rd.push_modification(Box::new(d_min.clone()));
+        rd.push_modification(Box::new(d_min.clone()));
+        rd.push_modification(Box::new(d_min.clone()));
+        rd.push_modification(Box::new(d_min.clone()));
+        rd.push_modification(Box::new(d_min.clone()));
+        rd.push_modification(Box::new(d_min.clone()));
+
+
+        println!("{:?}", rd.get_current_value());
+
+
         let rt = Resource::new(
             "".to_string(),
-            Box::new(t_min),
-            Box::new(t_max),
-            Box::new(t_start));
+            Box::new(t_min.clone()),
+            Box::new(t_max.clone()),
+            Box::new(t_start.clone()));
 
 
+        let mut tr = Traveler::new("".to_string());
+        tr.push_resource(Box::new(rd) as Box<ResourceTrait<UnitOfMeasureValueKind>>);
+        tr.push_resource(Box::new(rt) as Box<ResourceTrait<UnitOfMeasureValueKind>>);
 
 
-
-        println!("{:?}\n{:?}", rd, rt);
+        println!("{:?}", tr);
     }
 }
 // Macro

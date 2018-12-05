@@ -144,8 +144,8 @@ impl Graph {
     pub fn get_edge_distance(&self) -> distance::DistanceKind {
         distance::DistanceKind::Meters(self.edges.iter().fold(0.0, |acc, a| {
             let mut m = 0.0;
-            if let Some(mut distance) = a.1.get_distance().clone() {
-                m = distance.as_standard_unit().get_value().unwrap();
+            if let Some(distance) = a.1.get_distance() {
+                m = distance.clone().as_standard_unit().get_value().unwrap();
             };
             acc + m
         }))

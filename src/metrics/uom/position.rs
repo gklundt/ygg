@@ -4,7 +4,7 @@ use crate::metrics::uom::UnitOfMeasureValueKind;
 use std::fmt;
 
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum PositionKind {
     TwoDimensionEuclidean { x: distance::DistanceKind, y: distance::DistanceKind },
     ThreeDimensionEuclidean { x: distance::DistanceKind, y: distance::DistanceKind, z: distance::DistanceKind },
@@ -67,6 +67,17 @@ impl UnitOfMeasureValueKind for PositionKind {
                 { *self = PositionKind::Unknown }
         }
         self
+    }
+
+    fn clone(&self) -> Self where Self: Sized {
+        match &self {
+            PositionKind::TwoDimensionEuclidean { x, y } => PositionKind::TwoDimensionEuclidean { x: x.clone(), y: y.clone() },
+            PositionKind::ThreeDimensionEuclidean { x, y, z } => PositionKind::ThreeDimensionEuclidean { x: x.clone(), y: y.clone(), z: z.clone() },
+            PositionKind::TwoDimensionGeo { lat, lng } => PositionKind::TwoDimensionGeo { lat: lat.clone(), lng: lng.clone() },
+            PositionKind::Polar { radial, theta } => PositionKind::Polar { radial: radial.clone(), theta: theta.clone() },
+            PositionKind::Spherical { radial, polar, azimuth } => PositionKind::Spherical { radial: radial.clone(), polar: polar.clone(), azimuth: azimuth.clone() },
+            PositionKind::Unknown => PositionKind::Unknown,
+        }
     }
 }
 
