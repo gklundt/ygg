@@ -12,6 +12,7 @@ pub mod temperature;
 pub mod position;
 pub mod volume;
 pub mod illuminance;
+pub mod quantity;
 
 
 pub trait UnitOfMeasureValueKind: Debug {

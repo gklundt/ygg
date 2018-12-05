@@ -59,6 +59,8 @@ mod test_boxed {
     }
 }
 */
+
+//Mock Metrics
 /*
 
 pub mod moc_metrics {
@@ -198,6 +200,7 @@ mod traveler_sandbox {
     use ygg::heuristics::resources::ResourceTrait;
     use std::rc::Rc;
 
+
     pub fn main() {
         let d_min = DistanceKind::Meters(1.0);
         let d_max = DistanceKind::Meters(1.0);
@@ -236,9 +239,42 @@ mod traveler_sandbox {
         tr.push_resource(Box::new(rt) as Box<ResourceTrait<UnitOfMeasureValueKind>>);
 
 
-        println!("{:?}", tr);
+        let b_d = DistanceKind::Miles(5.0);
+        let b_t = TimeKind::Hours(5.0);
+        let b_rd = Resource::new(
+            "".to_string(),
+            Box::new(b_d.clone()),
+            Box::new(b_d.clone()),
+            Box::new(b_d.clone()));
+
+        let b_rt = Resource::new(
+            "".to_string(),
+            Box::new(b_t.clone()),
+            Box::new(b_t.clone()),
+            Box::new(b_t.clone()));
+
+        let mut b_tr = Traveler::new("".to_string());
+        b_tr.push_resource(Box::new(b_rd) as Box<ResourceTrait<UnitOfMeasureValueKind>>);
+        b_tr.push_resource(Box::new(b_rt) as Box<ResourceTrait<UnitOfMeasureValueKind>>);
+
+        let at_ref = Rc::new(tr);
+        let bt_ref = Rc::new(b_tr);
+
+
+        let mut v_traveler = Vec::new();
+        v_traveler.push(at_ref.clone());
+        v_traveler.push(bt_ref.clone());
+
+
+        for traveler in v_traveler {
+            println!("Traveler: {:?}", traveler.clone());
+            for resource in traveler.get_resources() {
+                println!("\tResource: {:?}", resource.clone());
+            }
+        }
     }
 }
+
 // Macro
 /*
 mod macro_sandbox {

@@ -1,10 +1,9 @@
-//use std::collections::HashMap;
-
-
-//use crate::heuristics::constraints::Constraint;
-//use crate::heuristics::resources::Resource;
 
 pub struct HeuristicsModel {
+
+
+
+
     // facts
 //    variables: HashMap<String, f64>,
     // immutable facts
