@@ -3,6 +3,7 @@ use crate::heuristics::resources::ResourceTrait;
 use std::marker::PhantomData;
 use std::collections::HashMap;
 
+
 #[derive(Debug)]
 pub struct Traveler<T: UnitOfMeasureValueKind + ?Sized, R: ResourceTrait<T> + ?Sized> {
     name: String,

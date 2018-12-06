@@ -4,6 +4,7 @@ use std::rc::Rc;
 use core::borrow::Borrow;
 use std::fmt::Debug;
 
+
 #[derive(Debug, Clone)]
 pub struct Resource<T: UnitOfMeasureValueKind + ?Sized> {
     name: String,
@@ -17,7 +18,9 @@ pub struct Resource<T: UnitOfMeasureValueKind + ?Sized> {
 
 pub trait ResourceTrait<T: UnitOfMeasureValueKind + ?Sized>: Debug {}
 
-impl<T: UnitOfMeasureValueKind + ?Sized> ResourceTrait<dyn UnitOfMeasureValueKind> for Resource<T> {}
+impl<T: UnitOfMeasureValueKind> ResourceTrait<dyn UnitOfMeasureValueKind> for Resource<T> {}
+
+impl<T: UnitOfMeasureValueKind + ?Sized> ResourceTrait<dyn UnitOfMeasureValueKind> for T {}
 
 impl<T: UnitOfMeasureValueKind> Resource<T> {
     pub fn new(name: String, min: Box<T>, max: Box<T>, starting_value: Box<T>) -> Self where T: Sized {
@@ -45,9 +48,11 @@ impl<T: UnitOfMeasureValueKind> Resource<T> {
         self.max.borrow()
     }
 
+
     pub fn push_modification(&mut self, modification: Box<T>) {
         &self.modifications.push(Box::new(modification.clone().as_standard_unit().clone()));
     }
+
 
     pub fn get_current_value(&mut self) -> &T {
         let mut ledger_value = 0.0;

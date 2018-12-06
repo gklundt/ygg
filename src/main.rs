@@ -200,7 +200,6 @@ mod traveler_sandbox {
     use ygg::heuristics::resources::ResourceTrait;
     use std::rc::Rc;
 
-
     pub fn main() {
         let d_min = DistanceKind::Meters(1.0);
         let d_max = DistanceKind::Meters(1.0);
@@ -227,11 +226,17 @@ mod traveler_sandbox {
         println!("{:?}", rd.get_current_value());
 
 
-        let rt = Resource::new(
+        let mut rt = Resource::new(
             "".to_string(),
             Box::new(t_min.clone()),
             Box::new(t_max.clone()),
             Box::new(t_start.clone()));
+        rt.push_modification(Box::new(t_min.clone()));
+        rt.push_modification(Box::new(t_min.clone()));
+        rt.push_modification(Box::new(t_min.clone()));
+        rt.push_modification(Box::new(t_min.clone()));
+        rt.push_modification(Box::new(t_min.clone()));
+        rt.push_modification(Box::new(t_min.clone()));
 
 
         let mut tr = Traveler::new("".to_string());
@@ -269,7 +274,7 @@ mod traveler_sandbox {
         for traveler in v_traveler {
             println!("Traveler: {:?}", traveler.clone());
             for resource in traveler.get_resources() {
-                println!("\tResource: {:?}", resource.clone());
+                println!("\tResource:{:?}", resource)
             }
         }
     }

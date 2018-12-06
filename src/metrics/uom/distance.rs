@@ -3,7 +3,6 @@ use std::fmt;
 use std::ops::Add;
 use std::ops::AddAssign;
 use std::ops::Sub;
-use crate::heuristics::resources::ResourceTrait;
 
 const METER_PER_FOOT: f64 = 0.3048;
 const METER_PER_MILE: f64 = 1609.34;
@@ -144,4 +143,3 @@ impl UnitOfMeasureValueKind for DistanceKind {
     }
 }
 
-impl ResourceTrait<dyn UnitOfMeasureValueKind> for DistanceKind {}
