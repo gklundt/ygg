@@ -43,7 +43,7 @@ impl UnitOfMeasureValueKind for TimeKind {
         self
     }
 
-    fn clone(&self) -> Self where Self: Sized {
+    fn duplicate(&self) -> Self where Self: Sized {
         match self {
             TimeKind::Hours(x) => TimeKind::Hours(*x),
             TimeKind::Minutes(x) => TimeKind::Minutes(*x),

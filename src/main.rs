@@ -3,7 +3,26 @@ extern crate ygg;
 
 
 pub fn main() {
-    traveler_sandbox::main();
+    cost_based_edge_test::main();
+}
+
+// Cost Based Edge Test
+mod cost_based_edge_test{
+    use ygg::graph_elements::edge::Edge;
+    use ygg::graph_elements::edge::CostBasedEdge;
+    use ygg::metrics::uom::time;
+    use ygg::metrics::uom::distance;
+
+    pub fn main(){
+        let e = Edge::new(None);
+        e.set_cost(time::TimeKind::Unknown);
+        println!("{:?}", e.get_cost());
+        e.set_cost(time::TimeKind::Seconds(5.0));
+        println!("{:?}", e.get_cost());
+//        e.set_cost(distance::DistanceKind::Meters(5.0));
+//        println!("{:?}", e.get_cost());
+    }
+
 }
 
 // Boxed Generics
@@ -190,6 +209,7 @@ mod moc_traveler_sandbox {
 */
 
 // Traveler
+/*
 mod traveler_sandbox {
     use ygg::metrics::uom::distance::DistanceKind;
     use ygg::metrics::uom::time::TimeKind;
@@ -279,6 +299,7 @@ mod traveler_sandbox {
         }
     }
 }
+*/
 
 // Macro
 /*

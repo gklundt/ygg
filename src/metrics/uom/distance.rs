@@ -70,8 +70,8 @@ impl Sub<DistanceKind> for DistanceKind {
     type Output = DistanceKind;
 
     fn sub(self, rhs: DistanceKind) -> Self {
-        let l_value = self.clone().as_standard_unit().get_value().unwrap();
-        let r_value = rhs.clone().as_standard_unit().get_value().unwrap();
+        let l_value = self.duplicate().as_standard_unit().get_value().unwrap();
+        let r_value = rhs.duplicate().as_standard_unit().get_value().unwrap();
         DistanceKind::Meters(l_value - r_value)
     }
 }
@@ -80,8 +80,8 @@ impl Add<DistanceKind> for DistanceKind {
     type Output = DistanceKind;
 
     fn add(self, rhs: DistanceKind) -> Self {
-        let l_value = self.clone().as_standard_unit().get_value().unwrap();
-        let r_value = rhs.clone().as_standard_unit().get_value().unwrap();
+        let l_value = self.duplicate().as_standard_unit().get_value().unwrap();
+        let r_value = rhs.duplicate().as_standard_unit().get_value().unwrap();
         DistanceKind::Meters(l_value + r_value)
     }
 }
@@ -89,7 +89,7 @@ impl Add<DistanceKind> for DistanceKind {
 impl AddAssign for DistanceKind {
     fn add_assign(&mut self, rhs: DistanceKind) {
         let l_value = self.as_standard_unit().get_value().unwrap();
-        let r_value = rhs.clone().as_standard_unit().get_value().unwrap();
+        let r_value = rhs.duplicate().as_standard_unit().get_value().unwrap();
         self.set_value(l_value + r_value);
     }
 }
@@ -131,7 +131,7 @@ impl UnitOfMeasureValueKind for DistanceKind {
         self
     }
 
-    fn clone(&self) -> Self where Self: Sized {
+    fn duplicate(&self) -> Self where Self: Sized {
         match self {
             DistanceKind::Feet(x) => DistanceKind::Feet(*x),
             DistanceKind::Miles(x) => DistanceKind::Miles(*x),

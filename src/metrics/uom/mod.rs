@@ -19,7 +19,7 @@ pub trait UnitOfMeasureValueKind: Debug {
     fn get_value(&self) -> Option<f64>;
     fn set_value(&mut self, value: f64) -> &Self where Self: Sized;
     fn as_standard_unit(&mut self) -> &mut Self where Self: Sized;
-    fn clone(&self) -> Self where Self: Sized;
+    fn duplicate(&self) -> Self where Self: Sized;
 }
 
 

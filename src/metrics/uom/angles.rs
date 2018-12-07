@@ -63,7 +63,7 @@ impl UnitOfMeasureValueKind for AngularKind {
         self
     }
 
-    fn clone(&self) -> Self where Self: Sized {
+    fn duplicate(&self) -> Self where Self: Sized {
         match self {
             AngularKind::Radians(r) => AngularKind::Radians(*r),
             AngularKind::Degrees(d) => AngularKind::Degrees(*d),

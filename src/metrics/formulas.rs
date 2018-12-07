@@ -5,8 +5,8 @@ use core::borrow::Borrow;
 
 
 pub fn distance_between_two_points(x: Box<position::PositionKind>, y: Box<position::PositionKind>) -> DistanceKind {
-    let x_si = x.clone().as_standard_unit().clone();
-    let y_si = y.clone().as_standard_unit().clone();
+    let x_si = x.duplicate().as_standard_unit().duplicate();
+    let y_si = y.duplicate().as_standard_unit().duplicate();
 
     match (&x_si, &y_si) {
         (position::PositionKind::TwoDimensionEuclidean { x: _, y: _ },

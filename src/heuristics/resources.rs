@@ -24,10 +24,10 @@ impl<T: UnitOfMeasureValueKind + ?Sized> ResourceTrait<dyn UnitOfMeasureValueKin
 
 impl<T: UnitOfMeasureValueKind> Resource<T> {
     pub fn new(name: String, min: Box<T>, max: Box<T>, starting_value: Box<T>) -> Self where T: Sized {
-        let min_si = Box::new(min.clone().as_standard_unit().clone());
-        let max_si = Box::new(max.clone().as_standard_unit().clone());
-        let sv_si = Box::new(starting_value.clone().as_standard_unit().clone());
-        let cv_si = Box::new(starting_value.clone().as_standard_unit().clone());
+        let min_si = Box::new(min.duplicate().as_standard_unit().duplicate());
+        let max_si = Box::new(max.duplicate().as_standard_unit().duplicate());
+        let sv_si = Box::new(starting_value.duplicate().as_standard_unit().duplicate());
+        let cv_si = Box::new(starting_value.duplicate().as_standard_unit().duplicate());
 
         Resource {
             name,
@@ -50,7 +50,7 @@ impl<T: UnitOfMeasureValueKind> Resource<T> {
 
 
     pub fn push_modification(&mut self, modification: Box<T>) {
-        &self.modifications.push(Box::new(modification.clone().as_standard_unit().clone()));
+        &self.modifications.push(Box::new(modification.duplicate().as_standard_unit().duplicate()));
     }
 
 

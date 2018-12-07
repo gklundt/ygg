@@ -10,6 +10,7 @@ use std::rc::Rc;
 use std::fmt;
 use crate::uuid::guid_64::Guid;
 use crate::graph_elements::graph::Graph;
+use crate::metrics::uom::UnitOfMeasureValueKind;
 
 
 #[derive(Debug)]
@@ -40,13 +41,13 @@ impl fmt::Display for ProblemKind {
 
 
 #[derive(Debug)]
-pub struct Solution {
-    graph: Graph,
+pub struct Solution<Cost: UnitOfMeasureValueKind + ?Sized> {
+    graph: Graph<Cost>,
 }
 
 
-impl Solution {
-    pub fn new(graph: Graph) -> Self {
+impl<Cost: UnitOfMeasureValueKind + ?Sized> Solution<Cost> {
+    pub fn new(graph: Graph<Cost>) -> Self {
         Solution { graph }
     }
 
@@ -62,15 +63,15 @@ impl Solution {
         }
     }
 
-    fn solve_(&mut self, problem: &ProblemKind, field: fn(&mut Solution, &ProblemKind)) {
+    fn solve_(&mut self, problem: &ProblemKind, field: fn(&mut Solution<Cost>, &ProblemKind)) {
         field(self, problem);
     }
 
-    pub fn get_graph(&self) -> &Graph {
+    pub fn get_graph(&self) -> &Graph<Cost> {
         &self.graph
     }
 
-    pub fn add_sub_graph(&mut self, sub_graph: Rc<Graph>) {
+    pub fn add_sub_graph(&mut self, sub_graph: Rc<Graph<Cost>>) {
         self.graph.add_sub_graph(sub_graph);
     }
 }

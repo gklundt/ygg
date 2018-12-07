@@ -29,38 +29,38 @@ impl UnitOfMeasureValueKind for PositionKind {
             PositionKind::TwoDimensionEuclidean { x, y } =>
                 {
                     *self = PositionKind::TwoDimensionEuclidean {
-                        y: y.clone().as_standard_unit().clone(),
-                        x: x.clone().as_standard_unit().clone(),
+                        y: y.duplicate().as_standard_unit().duplicate(),
+                        x: x.duplicate().as_standard_unit().duplicate(),
                     }
                 }
             PositionKind::ThreeDimensionEuclidean { x, y, z } =>
                 {
                     *self = PositionKind::ThreeDimensionEuclidean {
-                        x: x.clone().as_standard_unit().clone(),
-                        y: y.clone().as_standard_unit().clone(),
-                        z: z.clone().as_standard_unit().clone(),
+                        x: x.duplicate().as_standard_unit().duplicate(),
+                        y: y.duplicate().as_standard_unit().duplicate(),
+                        z: z.duplicate().as_standard_unit().duplicate(),
                     }
                 }
             PositionKind::TwoDimensionGeo { lat, lng } =>
                 {
                     *self = PositionKind::TwoDimensionGeo {
-                        lat: lat.clone().as_standard_unit().clone(),
-                        lng: lng.clone().as_standard_unit().clone(),
+                        lat: lat.duplicate().as_standard_unit().duplicate(),
+                        lng: lng.duplicate().as_standard_unit().duplicate(),
                     }
                 }
             PositionKind::Polar { radial, theta } =>
                 {
                     *self = PositionKind::Polar {
-                        radial: radial.clone().as_standard_unit().clone(),
-                        theta: theta.clone().as_standard_unit().clone(),
+                        radial: radial.duplicate().as_standard_unit().duplicate(),
+                        theta: theta.duplicate().as_standard_unit().duplicate(),
                     }
                 }
             PositionKind::Spherical { radial, polar, azimuth } =>
                 {
                     *self = PositionKind::Spherical {
-                        radial: radial.clone().as_standard_unit().clone(),
-                        polar: polar.clone().as_standard_unit().clone(),
-                        azimuth: azimuth.clone().as_standard_unit().clone(),
+                        radial: radial.duplicate().as_standard_unit().duplicate(),
+                        polar: polar.duplicate().as_standard_unit().duplicate(),
+                        azimuth: azimuth.duplicate().as_standard_unit().duplicate(),
                     }
                 }
             PositionKind::Unknown =>
@@ -69,13 +69,13 @@ impl UnitOfMeasureValueKind for PositionKind {
         self
     }
 
-    fn clone(&self) -> Self where Self: Sized {
+    fn duplicate(&self) -> Self where Self: Sized {
         match &self {
-            PositionKind::TwoDimensionEuclidean { x, y } => PositionKind::TwoDimensionEuclidean { x: x.clone(), y: y.clone() },
-            PositionKind::ThreeDimensionEuclidean { x, y, z } => PositionKind::ThreeDimensionEuclidean { x: x.clone(), y: y.clone(), z: z.clone() },
-            PositionKind::TwoDimensionGeo { lat, lng } => PositionKind::TwoDimensionGeo { lat: lat.clone(), lng: lng.clone() },
-            PositionKind::Polar { radial, theta } => PositionKind::Polar { radial: radial.clone(), theta: theta.clone() },
-            PositionKind::Spherical { radial, polar, azimuth } => PositionKind::Spherical { radial: radial.clone(), polar: polar.clone(), azimuth: azimuth.clone() },
+            PositionKind::TwoDimensionEuclidean { x, y } => PositionKind::TwoDimensionEuclidean { x: x.duplicate(), y: y.duplicate() },
+            PositionKind::ThreeDimensionEuclidean { x, y, z } => PositionKind::ThreeDimensionEuclidean { x: x.duplicate(), y: y.duplicate(), z: z.duplicate() },
+            PositionKind::TwoDimensionGeo { lat, lng } => PositionKind::TwoDimensionGeo { lat: lat.duplicate(), lng: lng.duplicate() },
+            PositionKind::Polar { radial, theta } => PositionKind::Polar { radial: radial.duplicate(), theta: theta.duplicate() },
+            PositionKind::Spherical { radial, polar, azimuth } => PositionKind::Spherical { radial: radial.duplicate(), polar: polar.duplicate(), azimuth: azimuth.duplicate() },
             PositionKind::Unknown => PositionKind::Unknown,
         }
     }

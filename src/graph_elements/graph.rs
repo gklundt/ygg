@@ -1,6 +1,6 @@
 use crate::metrics::uom::distance;
 use crate::metrics::uom::position;
-use crate::graph_elements::edge::Edge;
+//use crate::graph_elements::edge::Edge;
 use crate::graph_elements::node::Node;
 use crate::metrics::formulas;
 use crate::uuid::guid_64::Guid;
@@ -11,17 +11,18 @@ use std::fmt;
 use std::rc::Rc;
 
 use crate::metrics::uom::UnitOfMeasureValueKind;
+use crate::graph_elements::edge::Edge;
 
 #[derive(Debug)]
-pub struct Graph {
+pub struct Graph<Cost: UnitOfMeasureValueKind + ?Sized> {
     guid: Rc<Guid>,
-    edges: HashMap<Rc<Guid>, Rc<Edge>>,
+    edges: HashMap<Rc<Guid>, Rc<Edge<Cost>>>,
     nodes: HashMap<Rc<Guid>, Rc<Node>>,
     node_connections: HashMap<Rc<Guid>, HashMap<Rc<Guid>, Rc<Guid>>>,
     // source, (target, edge)[]
     edge_connections: HashMap<Rc<Guid>, Rc<NodePair>>,
     // edge, (source, target)
-    sub_graphs: HashMap<Rc<Guid>, Rc<Graph>>,
+    sub_graphs: HashMap<Rc<Guid>, Rc<Graph<Cost>>>,
     named_graphs: HashMap<Rc<String>, Rc<Guid>>,
     named_nodes: HashMap<Rc<String>, Rc<Guid>>,
 }
@@ -46,7 +47,7 @@ enum ActionState {
     AddBoth,
 }
 
-impl Graph {
+impl<Cost: UnitOfMeasureValueKind + ?Sized> Graph<Cost> {
     pub fn new() -> Self {
         Graph {
             guid: Guid::new(),
@@ -79,22 +80,22 @@ impl Graph {
             ActionState::AddRight(leg) => self.add_associate_node_(connection.1.get_guid(), leg, connection.0.get_guid()),
             ActionState::AddLeft(reg) => self.add_associate_node_(connection.0.get_guid(), reg, connection.1.get_guid()),
             ActionState::AssociateBoth => {
-                let new_edge: Rc<Edge> = self.create_edge_(connection.0.get_guid(), connection.1.get_guid());
+                let new_edge: Rc<Edge<Cost>> = self.create_edge_(connection.0.get_guid(), connection.1.get_guid());
                 self.associate_node_(connection.0.get_guid(), new_edge.get_guid(), connection.1.get_guid());
                 self.associate_node_(connection.1.get_guid(), new_edge.get_guid(), connection.0.get_guid());
             }
             ActionState::AddRightAssociateLeft => {
-                let new_edge: Rc<Edge> = self.create_edge_(connection.0.get_guid(), connection.1.get_guid());
+                let new_edge: Rc<Edge<Cost>> = self.create_edge_(connection.0.get_guid(), connection.1.get_guid());
                 self.associate_node_(connection.0.get_guid(), new_edge.get_guid(), connection.1.get_guid());
                 self.add_associate_node_(connection.1.get_guid(), new_edge.get_guid(), connection.0.get_guid());
             }
             ActionState::AddLeftAssociateRight => {
-                let new_edge: Rc<Edge> = self.create_edge_(connection.0.get_guid(), connection.1.get_guid());
+                let new_edge: Rc<Edge<Cost>> = self.create_edge_(connection.0.get_guid(), connection.1.get_guid());
                 self.add_associate_node_(connection.0.get_guid(), new_edge.get_guid(), connection.1.get_guid());
                 self.associate_node_(connection.1.get_guid(), new_edge.get_guid(), connection.0.get_guid());
             }
             ActionState::AddBoth => {
-                let new_edge: Rc<Edge> = self.create_edge_(connection.0.get_guid(), connection.1.get_guid());
+                let new_edge: Rc<Edge<Cost>> = self.create_edge_(connection.0.get_guid(), connection.1.get_guid());
                 self.add_associate_node_(connection.1.get_guid(), new_edge.get_guid(), connection.0.get_guid());
                 self.add_associate_node_(connection.0.get_guid(), new_edge.get_guid(), connection.1.get_guid());
             }
@@ -112,7 +113,7 @@ impl Graph {
         self.nodes.insert(guid, node);
     }
 
-    pub fn add_sub_graph(&mut self, sub_graph: Rc<Graph>) {
+    pub fn add_sub_graph(&mut self, sub_graph: Rc<Graph<Cost>>) {
         self.sub_graphs.insert(sub_graph.get_graph_guid(), sub_graph);
     }
 
@@ -145,13 +146,13 @@ impl Graph {
         distance::DistanceKind::Meters(self.edges.iter().fold(0.0, |acc, a| {
             let mut m = 0.0;
             if let Some(distance) = a.1.get_distance() {
-                m = distance.clone().as_standard_unit().get_value().unwrap();
+                m = distance.duplicate().as_standard_unit().get_value().unwrap();
             };
             acc + m
         }))
     }
 
-    pub fn get_edges(&mut self) -> &HashMap<Rc<Guid>, Rc<Edge>> {
+    pub fn get_edges(&mut self) -> &HashMap<Rc<Guid>, Rc<Edge<Cost>>> {
         &self.edges
     }
 
@@ -159,7 +160,7 @@ impl Graph {
         match Rc::ptr_eq(&self.guid, &graph_guid) {
             true => Some(self),
             false => {
-                let mut ret: Option<&Graph> = None;
+                let mut ret: Option<&Graph<Cost>> = None;
                 for g in &self.sub_graphs {
                     ret = match g.1.get_graph(graph_guid.clone()) {
                         Some(g) => Some(g),
@@ -221,7 +222,7 @@ impl Graph {
         }
     }
 
-    pub fn get_sub_graphs(&self) -> &HashMap<Rc<Guid>, Rc<Graph>> {
+    pub fn get_sub_graphs(&self) -> &HashMap<Rc<Guid>, Rc<Graph<Cost>>> {
         &self.sub_graphs
     }
 
@@ -243,7 +244,7 @@ impl Graph {
         }
     }
 
-    pub fn remove_edge_connection(&mut self, connection: Rc<Edge>) {
+    pub fn remove_edge_connection(&mut self, connection: Rc<Edge<Cost>>) {
         if let Some(edge) = self.edge_connections.get(&connection.get_guid()) {
             if let Some(l) = self.nodes.get(&edge.get_pair().0) {
                 if let Some(r) = self.nodes.get(&edge.get_pair().1) {
@@ -282,7 +283,7 @@ impl Graph {
         self.node_connections.insert(source_node, r);
     }
 
-    fn add_edge_(&mut self, edge: Rc<Edge>) {
+    fn add_edge_(&mut self, edge: Rc<Edge<Cost>>) {
         let guid: Rc<Guid> = Rc::clone(&edge.get_guid());
         self.edges.insert(guid, edge);
     }
@@ -299,20 +300,20 @@ impl Graph {
         }
     }
 
-    fn create_edge_(&mut self, source_node: Rc<Guid>, target_node: Rc<Guid>) -> Rc<Edge> {
+    fn create_edge_(&mut self, source_node: Rc<Guid>, target_node: Rc<Guid>) -> Rc<Edge<Cost>> {
         let mut ln: &position::PositionKind = &position::PositionKind::Unknown;
         if let Some(node) = &self.nodes.get(&source_node) { ln = node.get_position() };
 
         let mut rn: &position::PositionKind = &position::PositionKind::Unknown;
         if let Some(node) = &self.nodes.get(&target_node) { rn = node.get_position() };
 
-        let distance: distance::DistanceKind = formulas::distance_between_two_points(Box::new(ln.clone()), Box::new(rn.clone()));
+        let distance: distance::DistanceKind = formulas::distance_between_two_points(Box::new(ln.duplicate()), Box::new(rn.duplicate()));
         let edge_distance = match distance {
             distance::DistanceKind::Unknown => None,
             _ => Some(distance),
         };
 
-        let new_edge: Rc<Edge> = Rc::new(Edge::new(edge_distance));
+        let new_edge: Rc<Edge<Cost>> = Rc::new(Edge::new(edge_distance));
         self.add_edge_(Rc::clone(&new_edge));
         self.edge_connections.insert(
             new_edge.get_guid(),
@@ -394,7 +395,7 @@ impl Graph {
     }
 }
 
-impl fmt::Display for Graph {
+impl<Cost: UnitOfMeasureValueKind + ?Sized> fmt::Display for Graph<Cost> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut s: String = String::from(format!("Graph Guid: {}\n", self.guid.to_string()));
         s.push_str("Nodes:\n");

@@ -2,6 +2,7 @@
 #![feature(extern_crate_item_prelude)]
 #![feature(vec_remove_item)]
 #![feature(toowned_clone_into)]
+#![feature(inner_deref)]
 extern crate test;
 
 pub mod graph_elements;

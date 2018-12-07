@@ -1,8 +1,9 @@
 use crate::uuid::guid_64::Guid;
 use crate::solutions;
 use std::rc::Rc;
+use crate::metrics::uom::UnitOfMeasureValueKind;
 
-pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKind) {
+pub fn solve<Cost: UnitOfMeasureValueKind + ?Sized>(solution: &mut solutions::Solution<Cost>, problem: &solutions::ProblemKind) {
     let graph: Rc<Guid>;
     if let solutions::ProblemKind::BuildRoutes { graph_guid: g } = problem {
         graph = g.clone();

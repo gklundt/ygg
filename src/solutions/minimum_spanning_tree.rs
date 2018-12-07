@@ -7,7 +7,7 @@ use crate::graph_elements::cache::TreeCache;
 use crate::graph_elements::node_pair::NodePair;
 use crate::metrics::uom::UnitOfMeasureValueKind;
 
-pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKind) {
+pub fn solve<Cost: UnitOfMeasureValueKind + ?Sized>(solution: &mut solutions::Solution<Cost>, problem: &solutions::ProblemKind) {
     if let solutions::ProblemKind::MinimumSpanningTree { graph_guid } = problem {
         if let Some(og) = solution.get_graph().get_graph(graph_guid.clone()) {
             let mut edge_distances = Vec::new();
@@ -20,7 +20,7 @@ pub fn solve(solution: &mut solutions::Solution, problem: &solutions::ProblemKin
             for edge in re_hash_edges.iter() {
                 if let Some(edge_connection) = re_hash_connections.get(edge.0) {
                     if let Some(distance_kind) = edge.1.get_distance() {
-                        if let DistanceKind::Meters(distance) = distance_kind.clone().as_standard_unit().clone() {
+                        if let DistanceKind::Meters(distance) = distance_kind.duplicate().as_standard_unit().duplicate() {
                             let val = (edge_connection.get_pair().0.clone(), edge.0.clone(), edge_connection.get_pair().1.clone(), distance);
                             edge_distances.push(val);
                         } else { return; } // SI unit is not meters for some reason.
